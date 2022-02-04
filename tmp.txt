@@ -62,3 +62,7 @@ http://localhost/taskforce-tmp/web/user/view/2
 Страница регистрации
 http://taskforce/site/registration
 http://localhost/taskforce-tmp/web/site/registration
+
+Лендинг
+http://localhost/taskforce-tmp/web/landing
+
