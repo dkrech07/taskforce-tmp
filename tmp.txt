@@ -1,0 +1,60 @@
+0. Установка Yii в директорию taskforce:
+
+composer create-project --prefer-dist yiisoft/yii2-app-basic taskforce
+
+1. Создание Базы данных:
+
+CREATE DATABASE taskforce
+  DEFAULT CHARACTER SET utf8
+  DEFAULT COLLATE utf8_general_ci;
+
+2. Создание миграции:
+
+php yii migrate/create [название миграции]
+
+3. Реализация миграций:
+
+yii migrate
+
+4. Генерация тестовых данных (по 10 записей):
+
+php yii fixture/generate categories --count=10
+php yii fixture/generate cities --count=10
+php yii fixture/generate opinions --count=50
+php yii fixture/generate profiles --count=10
+php yii fixture/generate replies --count=10
+php yii fixture/generate specializations --count=50
+php yii fixture/generate tasks --count=50
+php yii fixture/generate users --count=10
+
+5. Загрузка тестовых данных:
+
+php yii fixture/load Categories
+php yii fixture/load Cities
+php yii fixture/load Opinions
+php yii fixture/load Profiles
+php yii fixture/load Replies
+php yii fixture/load Specializations
+php yii fixture/load Tasks
+php yii fixture/load Users
+
+6. Автозагрузка кастомных классов:
+
+composer dump-autoload
+
+7. Примеры страниц:
+
+Список задач 
+http://taskforce/index.php?r=tasks 
+http://taskforce/tasks
+
+Страница задачи 
+http://taskforce/index.php?r=tasks%2Fview&id=6
+http://taskforce/tasks/view/6
+
+Страница пользователя 
+http://taskforce/index.php?r=user%2Fview&id=2
+http://taskforce/user/view/2
+
+Страница регистрации
+http://taskforce/site/registration
