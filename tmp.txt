@@ -47,14 +47,18 @@ composer dump-autoload
 Список задач 
 http://taskforce/index.php?r=tasks 
 http://taskforce/tasks
+http://localhost/taskforce-tmp/web/tasks
 
 Страница задачи 
 http://taskforce/index.php?r=tasks%2Fview&id=6
 http://taskforce/tasks/view/6
+http://localhost/taskforce-tmp/web/tasks/view/6
 
 Страница пользователя 
 http://taskforce/index.php?r=user%2Fview&id=2
 http://taskforce/user/view/2
+http://localhost/taskforce-tmp/web/user/view/2
 
 Страница регистрации
 http://taskforce/site/registration
+http://localhost/taskforce-tmp/web/site/registration
