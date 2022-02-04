@@ -24,8 +24,6 @@ use yii\widgets\ActiveForm;
 
     <?= Html::submitButton('Войти', ['class' => 'button']) ?>
 
-
-
     <?php $form = ActiveForm::end(); ?>
 
     <button class="form-modal-close" type="button">Закрыть</button>
