@@ -61,3 +61,10 @@ http://taskforce/site/registration
 
 Страница авторизации
 http://taskforce/landing
+
+Страница создания задачи
+http://taskforce-tmp/tasks/add
+
+view/task/add.php
+models/AddTaskForm.php
+controllers/TaskController.php

@@ -9,6 +9,7 @@ use yii\web\NotFoundHttpException;
 use app\services\TasksService;
 use app\models\Tasks;
 use app\models\Categories;
+use app\models\AddTaskForm;
 
 class TasksController extends SecuredController
 {
@@ -48,6 +49,34 @@ class TasksController extends SecuredController
         return $this->render('view', [
             'task' => $task,
             'replies' => $replies,
+        ]);
+    }
+
+    public function actionAdd()
+    {
+        $addTaskForm = new AddTaskForm();
+
+        // if (Yii::$app->request->isPost) {
+        //     $addTaskForm->load(Yii::$app->request->post());
+        //     $addTaskForm->files = UploadedFile::getInstances($addTaskForm, 'files');
+
+        //     if (Yii::$app->request->isAjax) {
+        //         Yii::$app->response->format = Response::FORMAT_JSON;
+
+        //         return ActiveForm::validate($addTaskForm);
+        //     }
+
+        //     if ($addTaskForm->validate()) {
+        //         $taskId = (new TaskService())->create($addTaskForm);
+        //         $this->redirect(['tasks/view', 'id' => $taskId]);
+        //     }
+        // }
+
+        // $categories = (new CategoryService())->findAll();
+
+        return $this->render('add', [
+            'model' => $addTaskForm,
+            // 'categories' => $categories
         ]);
     }
 }
