@@ -37,7 +37,7 @@ class Replies extends \yii\db\ActiveRecord
             [['rate'], 'required'],
             [['rate', 'executor_id', 'task_id'], 'integer'],
             [['description'], 'string'],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Profiles::className(), 'targetAttribute' => ['executor_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Profiles::className(), 'targetAttribute' => ['executor_id' => 'user_id']],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Tasks::className(), 'targetAttribute' => ['task_id' => 'id']],
         ];
     }
@@ -63,7 +63,7 @@ class Replies extends \yii\db\ActiveRecord
      */
     public function getExecutor()
     {
-        return $this->hasOne(Profiles::className(), ['id' => 'executor_id']);
+        return $this->hasOne(Profiles::className(), ['user_id' => 'executor_id']);
     }
 
     /**

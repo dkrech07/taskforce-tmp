@@ -58,3 +58,6 @@ http://taskforce/user/view/2
 
 Страница регистрации
 http://taskforce/site/registration
+
+Страница авторизации
+http://taskforce/landing

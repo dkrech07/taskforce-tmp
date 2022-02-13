@@ -3,17 +3,14 @@
 namespace app\controllers;
 
 use Yii;
-use yii\web\Controller;
 use app\models\TasksSearchForm;
 use app\services\TasksFilterService;
-
 use yii\web\NotFoundHttpException;
 use app\services\TasksService;
-
 use app\models\Tasks;
 use app\models\Categories;
 
-class TasksController extends Controller
+class TasksController extends SecuredController
 {
     public function actionIndex()
     {

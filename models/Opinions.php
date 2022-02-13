@@ -66,6 +66,6 @@ class Opinions extends \yii\db\ActiveRecord
      */
     public function getProfile()
     {
-        return $this->hasOne(Profiles::className(), ['id' => 'customer_id']);
+        return $this->hasOne(Profiles::className(), ['user_id' => 'customer_id']);
     }
 }

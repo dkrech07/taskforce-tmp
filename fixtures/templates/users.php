@@ -9,5 +9,6 @@ return [
     'name' => $faker->firstName(),
     'password' => Yii::$app->getSecurity()->generatePasswordHash('password_' . $index),
     'dt_add' => $faker->date(),
-    'profile_id' => $index + 1,
+    'role' => $faker->numberBetween(0, 1),
+    'city_id' => $faker->numberBetween(1, 10),
 ];

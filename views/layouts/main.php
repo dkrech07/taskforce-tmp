@@ -10,28 +10,38 @@
 use yii\bootstrap4\Html;
 use app\assets\AppAsset;
 use yii\helpers\Url;
+use TaskForce\utils\CustomHelpers;
 
 AppAsset::register($this);
 
+$user = CustomHelpers::checkAuthorization();
+
+// Дополнитльная проверка на наличие данных пользователе в базе;
+if ($user) {
+    $userName = $user->name;
+} else {
+    $userName = 'Анонимный пользователь';
+}
+
 ?>
-<?php $this->beginPage() ?>
+<?php $this->beginPage(); ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" class="h-100">
 
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <?php $this->registerCsrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
+    <?php $this->registerCsrfMetaTags(); ?>
+    <title><?= Html::encode($this->title); ?></title>
+    <?php $this->head(); ?>
 </head>
 
 <body>
-    <?php $this->beginBody() ?>
+    <?php $this->beginBody(); ?>
 
     <header class="page-header">
         <nav class="main-nav">
-            <a href='#' class="header-logo">
+            <a href='<?= Url::to('/') ?>' class="header-logo">
                 <img class="logo-image" src="/img/logotype.png" width=227 height=60 alt="taskforce">
             </a>
             <?php if (Url::current() !== Url::to(['site/registration'])) : ?>
@@ -60,7 +70,7 @@ AppAsset::register($this);
                     <img class="user-photo" src="/img/man-glasses.png" width="55" height="55" alt="Аватар">
                 </a>
                 <div class="user-menu">
-                    <p class="user-name">Василий</p>
+                    <p class="user-name"><?= $userName ?></p>
                     <div class="popup-head">
                         <ul class="popup-menu">
                             <li class="menu-item">
@@ -70,7 +80,7 @@ AppAsset::register($this);
                                 <a href="#" class="link">Связаться с нами</a>
                             </li>
                             <li class="menu-item">
-                                <a href="#" class="link">Выход из системы</a>
+                                <a href="<?= Url::to('site/logout'); ?>" class="link">Выход из системы</a>
                             </li>
 
                         </ul>
@@ -84,8 +94,8 @@ AppAsset::register($this);
         <?= $content ?>
     </main>
 
-    <?php $this->endBody() ?>
+    <?php $this->endBody(); ?>
 </body>
 
 </html>
-<?php $this->endPage() ?>
+<?php $this->endPage(); ?>

@@ -11,7 +11,9 @@ use Yii;
  * @property string $name
  * @property string $password
  * @property string $dt_add
- * @property int $profile_id
+ * @property int|null $city_id
+ * @property int|null $role
+ * @property int $id
  */
 class Users extends \yii\db\ActiveRecord
 {
@@ -31,6 +33,7 @@ class Users extends \yii\db\ActiveRecord
         return [
             [['email', 'name', 'password', 'dt_add'], 'required'],
             [['dt_add'], 'safe'],
+            [['city_id', 'role'], 'integer'],
             [['email', 'name'], 'string', 'max' => 128],
             [['password'], 'string', 'max' => 64],
             [['email'], 'unique'],
@@ -47,8 +50,20 @@ class Users extends \yii\db\ActiveRecord
             'name' => 'Name',
             'password' => 'Password',
             'dt_add' => 'Dt Add',
-            'profile_id' => 'Profile ID',
+            'city_id' => 'City ID',
+            'role' => 'Role',
+            'id' => 'ID',
         ];
+    }
+
+    /**
+     * Gets query for [[City]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCity()
+    {
+        return $this->hasOne(Cities::className(), ['id' => 'city_id']);
     }
 
     /**
@@ -58,7 +73,7 @@ class Users extends \yii\db\ActiveRecord
      */
     public function getProfile()
     {
-        return $this->hasOne(Profiles::className(), ['id' => 'profile_id']);
+        return $this->hasOne(Profiles::className(), ['user_id' => 'id']);
     }
 
     /**
@@ -80,4 +95,34 @@ class Users extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Tasks::className(), ['executor_id' => 'id']);
     }
+
+    /**
+     * Gets query for [[Replies]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReplies()
+    {
+        return $this->hasMany(Replies::className(), ['executor_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Specializations]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsersSpecializations()
+    {
+        return $this->hasMany(Specializations::className(), ['user_id' => 'id']);
+    }
+
+    // /**
+    //  * Gets query for [[Tasks]].
+    //  *
+    //  * @return \yii\db\ActiveQuery
+    //  */
+    // public function getExecutorTasks()
+    // {
+    //     return $this->hasMany(Tasks::className(), ['executor_id' => 'id']);
+    // }
 }

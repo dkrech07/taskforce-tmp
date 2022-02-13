@@ -15,6 +15,8 @@ class RegistrationForm extends Model
     public $password_repeat;
     public $role;
 
+    private $_user;
+
     public function rules()
     {
         return [
@@ -42,5 +44,14 @@ class RegistrationForm extends Model
             'password_repeat' => 'Повтор пароля',
             'role' => 'Я собираюсь откликаться на заказы'
         ];
+    }
+
+    public function getUser()
+    {
+        if ($this->_user === null) {
+            $this->_user = User::findOne(['email' => $this->email]);
+        }
+
+        return $this->_user;
     }
 }

@@ -3,10 +3,11 @@
 namespace app\controllers;
 
 use Yii;
-use yii\web\Controller;
 use app\models\RegistrationForm;
 use app\models\Cities;
 use app\services\UserService;
+use yii\web\Controller;
+use TaskForce\utils\CustomHelpers;
 
 class SiteController extends Controller
 {
@@ -25,13 +26,28 @@ class SiteController extends Controller
 
             if ($RegistrationModel->validate()) {
                 (new UserService())->SaveNewUserProfile($RegistrationModel);
-                $this->redirect('/tasks');
+
+                $user = $RegistrationModel->getUser(); // Если валидация прошла, то получим модель найденного пользователя из формы;
+                Yii::$app->user->login($user); //Вызываем логин пользователя средствами встроенного компонента User;
+                return $this->goHome();
             }
+        }
+
+        if (CustomHelpers::checkAuthorization() !== null) {
+            $this->goHome();
         }
 
         return $this->render('registration', [
             'model' => $RegistrationModel,
             'cities' => $cities,
         ]);
+    }
+
+    // Разлогинивает пользователя;
+    public function actionLogout()
+    {
+        \Yii::$app->user->logout();
+
+        return $this->goHome();
     }
 }

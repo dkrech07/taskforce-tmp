@@ -11,14 +11,16 @@ use app\models\Opinions;
 use app\models\Users;
 use app\models\RegistrationForm;
 
+use yii\db\Expression;
+
 class UserService
 {
 
     public function getExecutor($id)
     {
-        return Profiles::find()
-            ->joinWith('user', 'city')
-            ->where(['profiles.id' => $id])
+        return Users::find()
+            ->joinWith('profile', 'city')
+            ->where(['id' => $id])
             ->one();
     }
 
@@ -47,8 +49,9 @@ class UserService
 
     public function getExecutorRatingPosition($id)
     {
-        $usersRatings = Profiles::find()
+        $usersRatings = Users::find()
             ->where(['role' => 1])
+            ->joinWith('profile')
             ->orderBy('average_rating ASC')
             ->asArray()
             ->all();
@@ -58,19 +61,30 @@ class UserService
 
     public function SaveNewUserProfile(RegistrationForm $RegistrationModel): void
     {
-        $profile = new Profiles();
         $user = new Users();
+        $profile = new Profiles();
+        $expression = new Expression('NOW()');
+        $now = (new \yii\db\Query)->select($expression)->scalar();  // ВЫБРАТЬ СЕЙЧАС ();
 
-        $profile->city_id = $RegistrationModel->city_id;
-        $profile->role = $RegistrationModel->role;
-
+        $user->city_id = $RegistrationModel->city_id;
+        $user->role = $RegistrationModel->role;
         $user->name = $RegistrationModel->name;
         $user->email = $RegistrationModel->email;
         $passwordHash = Yii::$app->getSecurity()->generatePasswordHash($RegistrationModel->password);
         $user->password = $passwordHash;
-        $user->dt_add = date("Y.m.d H:i:s");
+        $user->dt_add = $now; //date("Y.m.d H:i:s");
 
-        $profile->save();
-        $user->save();
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user->save();
+            $profile->user_id = $user->id;
+            $profile->save();
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
     }
 }

@@ -39,7 +39,7 @@ use yii\widgets\ActiveForm;
         </div>
 
         <div class="form-group">
-            <?= $form->field($model, 'role')->checkbox(enclosedByLabel: true) ?>
+            <?= $form->field($model, 'role')->checkbox(); ?>
         </div>
 
         <?= Html::submitInput('Создать аккаунт', [
