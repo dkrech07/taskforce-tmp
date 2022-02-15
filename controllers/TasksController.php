@@ -72,11 +72,12 @@ class TasksController extends SecuredController
         //     }
         // }
 
+        $categories = [];
         // $categories = (new CategoryService())->findAll();
 
         return $this->render('add', [
             'model' => $addTaskForm,
-            // 'categories' => $categories
+            'categories' => $categories
         ]);
     }
 }

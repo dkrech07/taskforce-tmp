@@ -64,7 +64,7 @@ LandingAsset::register($this);
                     <a href="#" class="header__account-enter open-modal" data-for="enter-form">
                         <span>Вход</span></a>
                     или
-                    <a href="<?= Url::to('/site/registration') ?>" class="header__account-registration">
+                    <a href="<?= Url::to('/taskforce/web/site/registration') ?>" class="header__account-registration">
                         Регистрация
                     </a>
                 </div>
