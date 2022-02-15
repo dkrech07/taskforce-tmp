@@ -54,6 +54,10 @@ class Tasks extends \yii\db\ActiveRecord
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['executor_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Categories::className(), 'targetAttribute' => ['category_id' => 'id']],
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => Cities::className(), 'targetAttribute' => ['city_id' => 'id']],
+            // [
+            //     ['expire'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'),
+            //     'tooSmall' => 'Дата не может быть раньше текущего дня.'
+            // ],
         ];
     }
 
