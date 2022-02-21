@@ -41,7 +41,7 @@ if ($user) {
 
     <header class="page-header">
         <nav class="main-nav">
-            <a href='<?= Url::to('/taskforce-tmp/web/') ?>' class="header-logo">
+            <a href='<?= Url::to('/') ?>' class="header-logo">
                 <img class="logo-image" src="/img/logotype.png" width=227 height=60 alt="taskforce">
             </a>
             <?php if (Url::current() !== Url::to(['site/registration'])) : ?>
@@ -53,9 +53,11 @@ if ($user) {
                         <li class="list-item">
                             <a href="#" class="link link--nav">Мои задания</a>
                         </li>
-                        <li class="list-item">
-                            <a href="/taskforce-tmp/web/tasks/add" class="link link--nav">Создать задание</a>
-                        </li>
+                        <?php if ($user->role === 0) : ?>
+                            <li class="list-item">
+                                <a href="<?= Url::to('/tasks/add') ?>" class="link link--nav">Создать задание</a>
+                            </li>
+                        <?php endif; ?>
                         <li class="list-item">
                             <a href="#" class="link link--nav">Настройки</a>
                         </li>
@@ -80,7 +82,7 @@ if ($user) {
                                 <a href="#" class="link">Связаться с нами</a>
                             </li>
                             <li class="menu-item">
-                                <a href="<?= Url::to('site/logout'); ?>" class="link">Выход из системы</a>
+                                <a href="<?= Url::to('/site/logout'); ?>" class="link">Выход из системы</a>
                             </li>
 
                         </ul>

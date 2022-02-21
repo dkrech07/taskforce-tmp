@@ -8,9 +8,31 @@ use app\models\Cities;
 use app\services\UserService;
 use yii\web\Controller;
 use TaskForce\utils\CustomHelpers;
+use yii\filters\AccessControl;
 
 class SiteController extends Controller
 {
+    // Применяет правила авторизации к контроллерам;
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['registration'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['registration'],
+                        'matchCallback' => function ($rule, $action) {
+                            return CustomHelpers::checkAuthorization() === null;
+                        }
+                    ]
+                ]
+            ]
+        ];
+    }
+
+
     public function actionRegistration()
     {
         $RegistrationModel = new RegistrationForm();
@@ -29,12 +51,8 @@ class SiteController extends Controller
 
                 $user = $RegistrationModel->getUser(); // Если валидация прошла, то получим модель найденного пользователя из формы;
                 Yii::$app->user->login($user); //Вызываем логин пользователя средствами встроенного компонента User;
-                return $this->goHome();
+                $this->redirect('/tasks/index');
             }
-        }
-
-        if (CustomHelpers::checkAuthorization() !== null) {
-            $this->goHome();
         }
 
         return $this->render('registration', [
@@ -47,7 +65,18 @@ class SiteController extends Controller
     public function actionLogout()
     {
         \Yii::$app->user->logout();
-
         return $this->goHome();
+    }
+
+    // Редиректит в задачи со страницы регистрации, если уже авторизован;
+    public function beforeAction($action)
+    {
+        if ($action->id === 'registration') {
+            if (CustomHelpers::checkAuthorization() !== null) {
+                $this->redirect('/tasks/index');
+                return false;
+            }
+        }
+        return true;
     }
 }

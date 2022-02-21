@@ -6,8 +6,10 @@ namespace TaskForce\utils;
 
 use Yii;
 use app\models\User;
+use yii\db\Expression;
 
 const ALL_STARS_COUNT = 5;
+const COUNT_BYTES_IN_KILOBYTE = 1024;
 
 class CustomHelpers
 {
@@ -107,5 +109,28 @@ class CustomHelpers
             return null;
         }
         return User::findIdentity(Yii::$app->user->getId());
+    }
+
+    public static function getCurrentDate()
+    {
+        $expression = new Expression('NOW()');
+        $now = (new \yii\db\Query)->select($expression)->scalar();  // ВЫБРАТЬ СЕЙЧАС ();
+        return $now;
+    }
+
+    public static function checkNullDate($date)
+    {
+        if (isset($date)) {
+            return date("j F Y, g:i a", strtotime($date));
+        } else {
+            return 'Время не задано';
+        }
+    }
+
+    public static function getFileSize(string $file_path)
+    {
+        $fileSize = filesize(Yii::getAlias('@webroot') . '/uploads/' . $file_path) / COUNT_BYTES_IN_KILOBYTE;
+
+        return ceil($fileSize);
     }
 }

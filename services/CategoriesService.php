@@ -10,9 +10,4 @@ class CategoriesService
     {
         return Categories::find()->all();
     }
-
-    // public function getByInnerName(string $inner_name): ?Categories
-    // {
-    //     return Categories::findOne(['inner_name' => $inner_name]);
-    // }
 }

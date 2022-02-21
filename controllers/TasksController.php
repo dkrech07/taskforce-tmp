@@ -13,9 +13,27 @@ use app\models\Categories;
 use app\models\AddTaskForm;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
+use yii\web\UploadedFile;
 
 class TasksController extends SecuredController
 {
+    public function behaviors()
+    {
+        $rules = parent::behaviors();
+        $rule = [
+            'allow' => false,
+            'actions' => ['add'],
+            'matchCallback' => function ($rule, $action) {
+                if (isset(\Yii::$app->user->identity->role)) {
+                    return \Yii::$app->user->identity->role !== 0;
+                }
+            }
+        ];
+
+        array_unshift($rules['access']['rules'], $rule);
+        return $rules;
+    }
+
     public function actionIndex()
     {
         $model = new TasksSearchForm();
@@ -44,6 +62,7 @@ class TasksController extends SecuredController
         $tasksService = new TasksService;
         $task = $tasksService->getTask($id);
         $replies = $tasksService->getReplies($id);
+        $task_files = $tasksService->getTaskFiles($id);
 
         if (!$task) {
             throw new NotFoundHttpException;
@@ -52,26 +71,27 @@ class TasksController extends SecuredController
         return $this->render('view', [
             'task' => $task,
             'replies' => $replies,
+            'task_files' => $task_files,
         ]);
     }
 
     public function actionAdd()
     {
-        $addTaskForm = new AddTaskForm();
+        $addTaskFormModel = new AddTaskForm();
         $tasksService = new TasksService;
 
         if (Yii::$app->request->isPost) {
-            $addTaskForm->load(Yii::$app->request->post());
-            // $addTaskForm->files = UploadedFile::getInstances($addTaskForm, 'files');
+            $addTaskFormModel->load(Yii::$app->request->post());
+            $addTaskFormModel->files = UploadedFile::getInstances($addTaskFormModel, 'files');
 
             if (Yii::$app->request->isAjax) {
                 Yii::$app->response->format = Response::FORMAT_JSON;
 
-                return ActiveForm::validate($addTaskForm);
+                return ActiveForm::validate($addTaskFormModel);
             }
 
-            if ($addTaskForm->validate()) {
-                $taskId = $tasksService->createTask($addTaskForm);
+            if ($addTaskFormModel->validate()) {
+                $taskId = $tasksService->createTask($addTaskFormModel);
                 $this->redirect(['tasks/view', 'id' => $taskId]);
             }
         }
@@ -80,7 +100,7 @@ class TasksController extends SecuredController
         $categories = $categoriesModel->findAll();
 
         return $this->render('add', [
-            'model' => $addTaskForm,
+            'addTaskFormModel' => $addTaskFormModel,
             'categories' => $categories
         ]);
     }

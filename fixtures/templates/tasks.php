@@ -19,5 +19,4 @@ return [
     'customer_id' => $faker->numberBetween(1, 10),
     'executor_id' => $faker->numberBetween(1, 10),
     'city_id' => $faker->numberBetween(1, 10),
-    'file_link' => $faker->url(),
 ];
