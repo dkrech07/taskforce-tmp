@@ -133,4 +133,27 @@ class CustomHelpers
 
         return ceil($fileSize);
     }
+
+    // Для откликов на задачу: проверяет является ли поьзователь просмотривающий задачу
+    // авторизованным пользователм-постановщиком
+    // или откликнувшимся на задачу
+    // Если пользователь постановщик или откликнулся на задачу возвращает id, если нет - false;
+    public static function getCustomerOrExecutor(array $replies, object $task, int $userId)
+    {
+        if (count($replies) === 0) {
+            return false;
+        }
+
+        if ($task['customer_id'] === $userId) {
+            return $userId;
+        }
+
+        foreach ($replies as $reply) {
+            if ($reply['executor_id'] === $userId) {
+                return $userId;
+            }
+        }
+
+        return false;
+    }
 }

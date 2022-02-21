@@ -4,9 +4,8 @@ use yii\helpers\Html;
 use TaskForce\utils\NounPluralConverter;
 use TaskForce\utils\CustomHelpers;
 
-$taskCustomerId = $task->customer_id;
+// $taskCustomerId = $task->customer_id;
 $userId = Yii::$app->user->getId();
-
 ?>
 
 <div class="left-column">
@@ -22,39 +21,42 @@ $userId = Yii::$app->user->getId();
         <p class="map-address"><?= Html::encode($task->address) ?></p>
     </div>
 
-    <?php if (count($replies) > 0) : ?>
-        <!-- && $taskCustomerId === $userId -->
+    <?php if (CustomHelpers::getCustomerOrExecutor($replies, $task, $userId)) : ?>
         <h4 class="head-regular">Отклики на задание</h4>
 
         <?php foreach ($replies as $reply) : ?>
-            <div class="response-card">
-                <img class="customer-photo" src="<?= (Html::encode($reply->executor->avatar_link)); ?>" width="146" height="156" alt="Фото заказчиков">
-                <div class="feedback-wrapper">
-                    <a href="#" class="link link--block link--big"></a>
-                    <div class="response-wrapper">
-                        <div class="stars-rating small">
-                            <?= CustomHelpers::getRatingStars(Html::encode($reply->executor->average_rating)); ?>
+
+            <?php if ($reply->executor_id === $userId || $task->customer_id == $userId) : ?>
+                <div class="response-card">
+                    <img class="customer-photo" src="<?= (Html::encode($reply->executor->avatar_link)); ?>" width="146" height="156" alt="Фото заказчиков">
+                    <div class="feedback-wrapper">
+                        <a href="#" class="link link--block link--big"></a>
+                        <div class="response-wrapper">
+                            <div class="stars-rating small">
+                                <?= CustomHelpers::getRatingStars(Html::encode($reply->executor->average_rating)); ?>
+                            </div>
+                            <p class="reviews"><?= (count($reply->opinion)); ?> <?= NounPluralConverter::getOpinionsTitle(count($reply->opinion)); ?></p>
                         </div>
-                        <p class="reviews"><?= (count($reply->opinion)); ?> <?= NounPluralConverter::getOpinionsTitle(count($reply->opinion)); ?></p>
+                        <p class="response-message">
+                            <?= Html::encode($reply->description); ?>
+                        </p>
+
                     </div>
-                    <p class="response-message">
-                        <?= Html::encode($reply->description); ?>
-                    </p>
+                    <div class="feedback-wrapper">
+                        <p class="info-text"><span class="current-time"><?= NounPluralConverter::getTaskRelativeTime($reply->dt_add); ?></span></p>
+                        <p class="price price--small"><?= Html::encode($reply->rate); ?> ₽</p>
+                    </div>
+
+                    <?php if ($task->customer_id === $userId) : ?>
+                        <div class="button-popup">
+                            <a href="#" class="button button--blue button--small">Принять</a>
+                            <a href="#" class="button button--orange button--small">Отказать</a>
+                        </div>
+                    <?php endif; ?>
 
                 </div>
-                <div class="feedback-wrapper">
-                    <p class="info-text"><span class="current-time"><?= NounPluralConverter::getTaskRelativeTime($reply->dt_add); ?></span></p>
-                    <p class="price price--small"><?= Html::encode($reply->rate); ?> ₽</p>
-                </div>
+            <?php endif; ?>
 
-                <?php if ($taskCustomerId === $userId) : ?>
-                    <div class="button-popup">
-                        <a href="#" class="button button--blue button--small">Принять</a>
-                        <a href="#" class="button button--orange button--small">Отказать</a>
-                    </div>
-                <?php endif; ?>
-
-            </div>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
