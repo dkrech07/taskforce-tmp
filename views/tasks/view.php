@@ -3,6 +3,10 @@
 use yii\helpers\Html;
 use TaskForce\utils\NounPluralConverter;
 use TaskForce\utils\CustomHelpers;
+
+$taskCustomerId = $task->customer_id;
+$userId = Yii::$app->user->getId();
+
 ?>
 
 <div class="left-column">
@@ -19,6 +23,7 @@ use TaskForce\utils\CustomHelpers;
     </div>
 
     <?php if (count($replies) > 0) : ?>
+        <!-- && $taskCustomerId === $userId -->
         <h4 class="head-regular">Отклики на задание</h4>
 
         <?php foreach ($replies as $reply) : ?>
@@ -41,10 +46,14 @@ use TaskForce\utils\CustomHelpers;
                     <p class="info-text"><span class="current-time"><?= NounPluralConverter::getTaskRelativeTime($reply->dt_add); ?></span></p>
                     <p class="price price--small"><?= Html::encode($reply->rate); ?> ₽</p>
                 </div>
-                <div class="button-popup">
-                    <a href="#" class="button button--blue button--small">Принять</a>
-                    <a href="#" class="button button--orange button--small">Отказать</a>
-                </div>
+
+                <?php if ($taskCustomerId === $userId) : ?>
+                    <div class="button-popup">
+                        <a href="#" class="button button--blue button--small">Принять</a>
+                        <a href="#" class="button button--orange button--small">Отказать</a>
+                    </div>
+                <?php endif; ?>
+
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
