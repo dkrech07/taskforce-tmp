@@ -3,8 +3,8 @@
 use yii\helpers\Html;
 use TaskForce\utils\NounPluralConverter;
 use TaskForce\utils\CustomHelpers;
+use yii\widgets\ActiveForm;
 
-// $taskCustomerId = $task->customer_id;
 $userId = Yii::$app->user->getId();
 ?>
 
@@ -49,8 +49,8 @@ $userId = Yii::$app->user->getId();
 
                     <?php if ($task->customer_id === $userId) : ?>
                         <div class="button-popup">
-                            <a href="#" class="button button--blue button--small">Принять</a>
-                            <a href="#" class="button button--orange button--small">Отказать</a>
+                            <a href="<?= '/accept/' . $reply->id ?>" class="button button--blue button--small">Принять</a>
+                            <a href="<?= '/reject/' . $reply->id ?>" class="button button--orange button--small">Отказать</a>
                         </div>
                     <?php endif; ?>
 

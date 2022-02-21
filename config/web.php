@@ -57,6 +57,8 @@ $config = [
             'enableStrictParsing' => false,
             'rules' => [
                 '/' => '/landing/index',
+                'accept/<id:\d+>' => 'tasks/accept',
+                'reject/<id:\d+>' => 'tasks/reject',
                 'tasks/view/<id>' => 'tasks/view',
                 'user/view/<id>' => 'user/view',
             ],

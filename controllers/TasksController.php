@@ -11,6 +11,7 @@ use app\services\CategoriesService;
 use app\models\Tasks;
 use app\models\Categories;
 use app\models\AddTaskForm;
+use app\models\Replies;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use yii\web\UploadedFile;
@@ -103,5 +104,54 @@ class TasksController extends SecuredController
             'addTaskFormModel' => $addTaskFormModel,
             'categories' => $categories
         ]);
+    }
+
+    public function acceptReply($reply)
+    {
+        //меняем статус отклика на принято
+        // $modelReplies = Replies::findOne(['id' => $reply->id]);
+        // $modelTasks = Tasks::findOne(['id' => $reply->id]);
+
+        // Найти отзыв
+        // Найти задачу
+        // Записать в задачу отзыв (id отзыва)
+        // Поменять статус задачи на в работе
+
+        // $model->status = Reply::STATUS_ACCEPTED;
+        // $model->update();
+        // //стартуем задание
+        // $task = Task::findOne(['id' => $reply->task_id]);
+        // if (Action::doAction(Action::ACTION_START, $task, $this->user->id)) {
+        //     $task->contr_id = $model->contr_id;
+        //     if ($task->update() === false) {
+        //         throw new \Exception('Не удалось изменить данные задачи id ' . $task->id);
+        //     }
+        // }
+    }
+
+    /**
+     * Принять отклик исполнителя
+     * @param int $id id отклика исполнителя
+     */
+    public function actionAccept(int $id)
+    {
+        $reply = Replies::findOne(['id' => $id]);
+
+        $task = Tasks::findOne(['id' => $reply->task_id]);
+        $task->executor_id = $reply->executor_id;
+        $task->status = 'in_progress';
+        // Добавить статус отклика
+        $task->save();
+    }
+
+    /**
+     * Отклонить отклик исполнителя
+     * @param int $id id отклика исполнителя
+     */
+    public function actionReject(int $id)
+    {
+        $reply = Replies::findOne(['id' => $id]);
+        $this->rejectReply($reply);
+        return $this->actionView($reply->task_id);
     }
 }
