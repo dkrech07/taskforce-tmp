@@ -136,12 +136,26 @@ class TasksController extends SecuredController
     public function actionAccept(int $id)
     {
         $reply = Replies::findOne(['id' => $id]);
-
         $task = Tasks::findOne(['id' => $reply->task_id]);
+
+        $reply->status = 1;
+
         $task->executor_id = $reply->executor_id;
         $task->status = 'in_progress';
-        // Добавить статус отклика
-        $task->save();
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $reply->save();
+            $task->save();
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
+
+        return $this->actionView($reply->task_id);
     }
 
     /**
@@ -151,7 +165,11 @@ class TasksController extends SecuredController
     public function actionReject(int $id)
     {
         $reply = Replies::findOne(['id' => $id]);
-        $this->rejectReply($reply);
+        $reply->status = 0;
+        $reply->save();
+
+        // $this->rejectReply($reply);
+
         return $this->actionView($reply->task_id);
     }
 }

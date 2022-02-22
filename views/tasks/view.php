@@ -47,7 +47,7 @@ $userId = Yii::$app->user->getId();
                         <p class="price price--small"><?= Html::encode($reply->rate); ?> ₽</p>
                     </div>
 
-                    <?php if ($task->customer_id === $userId) : ?>
+                    <?php if ($task->customer_id === $userId && !isset($reply->status)) : ?>
                         <div class="button-popup">
                             <a href="<?= '/accept/' . $reply->id ?>" class="button button--blue button--small">Принять</a>
                             <a href="<?= '/reject/' . $reply->id ?>" class="button button--orange button--small">Отказать</a>
