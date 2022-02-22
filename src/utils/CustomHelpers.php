@@ -156,4 +156,16 @@ class CustomHelpers
 
         return false;
     }
+
+    // Проверяет есть ли среди откликов к задаче хотя бы один со статусом "Принят"
+    // Если задача со статусом "Принят" есть, возвращает false;
+    public static function checkRepliesStatus(array $replies)
+    {
+        foreach ($replies as $reply) {
+            if ($reply['status'] === 1) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
