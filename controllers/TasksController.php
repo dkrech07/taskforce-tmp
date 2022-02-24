@@ -66,7 +66,7 @@ class TasksController extends SecuredController
         $tasksService = new TasksService;
         $task = $tasksService->getTask($id);
         $replies = $tasksService->getReplies($id);
-        $taskFiles = $tasksService->getTaskFiles($id);
+        $tasksFiles = $tasksService->getTaskFiles($id);
 
         if (!$task) {
             throw new NotFoundHttpException;
@@ -74,10 +74,12 @@ class TasksController extends SecuredController
 
         $customer_id = $task->customer_id;
         $executor_id = $task->executor_id;
+        // $executor_id = null;
         $user_id = CustomHelpers::checkAuthorization()->id;
         $current_status = $task->status;
         $Actions = new Task($customer_id, $executor_id, $user_id, $current_status);
         $taskAction = $Actions->get_user_actions($current_status);
+        print_r($taskAction);
 
         $repliesModel = new Replies();
 
@@ -98,7 +100,7 @@ class TasksController extends SecuredController
         return $this->render('view', [
             'task' => $task,
             'replies' => $replies,
-            'taskFiles' => $taskFiles,
+            'tasksFiles' => $tasksFiles,
             'taskAction' => $taskAction,
             'repliesModel' => $repliesModel,
         ]);

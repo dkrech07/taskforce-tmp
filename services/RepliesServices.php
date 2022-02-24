@@ -23,7 +23,6 @@ class RepliesServices
         // $reply->status = 1;
         // $reply->id = 111;
 
-        print_r($reply);
         $reply->save();
 
 

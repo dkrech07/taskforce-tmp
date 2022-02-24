@@ -132,7 +132,7 @@ $userId = Yii::$app->user->getId();
         <div class="right-card white file-card">
             <h4 class="head-card">Файлы задания</h4>
             <ul class="enumeration-list">
-                <?php foreach ($tasksFiles as $task_file) : ?>
+                <?php foreach ($tasksfiles as $task_file) : ?>
                     <li class="enumeration-item">
                         <a target="_blank" href="<?= '/uploads/' . $task_file->link ?>" class="link link--block link--clip"><?= $task_file->link ?></a>
                         <p class="file-size"><?= CustomHelpers::getFileSize($task_file->link) ?> Кб</p>

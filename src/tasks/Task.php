@@ -24,7 +24,7 @@ class Task
     public const ROLE_CUSTOMER = 'ЗАКАЗЧИК';
     public const ROLE_EXECUTOR = 'ИСПОЛНИТЕЛЬ';
 
-    public function __construct(int $customer_id, int $executor_id, int $user_id, string $current_status)
+    public function __construct(int $customer_id, int $executor_id = null, int $user_id, string $current_status)
     {
         $this->customer_id = $customer_id;
         $this->executor_id = $executor_id;
@@ -105,7 +105,6 @@ class Task
     {
         if ($this->check_user_role()) {
             $role = $this->user_id === $this->customer_id ? self::ROLE_CUSTOMER : self::ROLE_EXECUTOR;
-
             if (!isset($this->next_action[$current_status])) {
                 throw new StatusException('Метод get_user_actions: для статуса ' . $current_status . ' нет доступных действий');
             }
