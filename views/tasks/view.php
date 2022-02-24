@@ -4,8 +4,13 @@ use yii\helpers\Html;
 use TaskForce\utils\NounPluralConverter;
 use TaskForce\utils\CustomHelpers;
 use yii\widgets\ActiveForm;
+use TaskForce\tasks\Task;
+use yii\bootstrap4\Modal;
 
 $userId = Yii::$app->user->getId();
+
+// $taskActionLink = $taskAction->get_action_code() ?? null;
+
 ?>
 
 <div class="left-column">
@@ -14,7 +19,30 @@ $userId = Yii::$app->user->getId();
         <p class="price price--big"><?= Html::encode($task->budget); ?></p>
     </div>
     <p class="task-description"><?= Html::encode($task->description); ?></p>
-    <a href="#" class="button button--blue">Откликнуться на задание</a>
+
+
+    <!-- Модалка для отклика на задание, если пользователь исполнитель -->
+    <?php Modal::begin([
+        'title' => '<h2>Отправка отклика</h2>',
+        'toggleButton' => [
+            'label' => 'Откликнуться на задание',
+            'tag' => 'button',
+            'class' => 'button button--blue',
+        ],
+        'footer' => $task->name,
+    ]);
+    ?>
+    <?php $form = ActiveForm::begin(['id' => 'modal-form']); ?>
+    <?= $form->field($repliesModel, 'description')->textarea(['autofocus' => true]) ?>
+    <?= $form->field($repliesModel, 'rate')->input('number') ?>
+    <div class="form-group">
+        <button type="submit" class="modal-button" form="modal-form" name="reply" value="ok">Отправить</button>
+        <button type="button" class="modal-button" data-dismiss="modal">Отменить</button>
+    </div>
+    <?php ActiveForm::end(); ?>
+    <?php Modal::end(); ?>
+
+
     <div class="task-map">
         <img class="map" src="/img/map.png" width="725" height="346" alt="<?= Html::encode($task->address); ?>">
         <p class="map-address town"><?= Html::encode(isset($task->city->city)); ?></p>
@@ -76,11 +104,11 @@ $userId = Yii::$app->user->getId();
         </dl>
     </div>
 
-    <?php if (count($task_files) > 0) : ?>
+    <?php if (count($taskFiles) > 0) : ?>
         <div class="right-card white file-card">
             <h4 class="head-card">Файлы задания</h4>
             <ul class="enumeration-list">
-                <?php foreach ($task_files as $task_file) : ?>
+                <?php foreach ($taskfiles as $task_file) : ?>
                     <li class="enumeration-item">
                         <a target="_blank" href="<?= '/uploads/' . $task_file->link ?>" class="link link--block link--clip"><?= $task_file->link ?></a>
                         <p class="file-size"><?= CustomHelpers::getFileSize($task_file->link) ?> Кб</p>

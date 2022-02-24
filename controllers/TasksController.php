@@ -15,6 +15,9 @@ use app\models\Replies;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use yii\web\UploadedFile;
+use TaskForce\tasks\Task;
+use TaskForce\utils\CustomHelpers;
+use app\services\RepliesServices;
 
 class TasksController extends SecuredController
 {
@@ -63,16 +66,41 @@ class TasksController extends SecuredController
         $tasksService = new TasksService;
         $task = $tasksService->getTask($id);
         $replies = $tasksService->getReplies($id);
-        $task_files = $tasksService->getTaskFiles($id);
+        $taskFiles = $tasksService->getTaskFiles($id);
 
         if (!$task) {
             throw new NotFoundHttpException;
         }
 
+        $customer_id = $task->customer_id;
+        $executor_id = $task->executor_id;
+        $user_id = CustomHelpers::checkAuthorization()->id;
+        $current_status = $task->status;
+        $Actions = new Task($customer_id, $executor_id, $user_id, $current_status);
+        $taskAction = $Actions->get_user_actions($current_status);
+
+        $repliesModel = new Replies();
+
+        if (Yii::$app->request->isPost) {
+            $repliesModel->load(Yii::$app->request->post());
+
+            // if (Yii::$app->request->isAjax) {
+            //     Yii::$app->response->format = Response::FORMAT_JSON;
+            //     return ActiveForm::validate($repliesModel);
+            // }
+
+            if ($repliesModel->validate()) {
+                (new RepliesServices())->createReply($user_id, $id, $repliesModel);
+                // $this->redirect(['tasks/view', 'id' => $taskId]);
+            }
+        }
+
         return $this->render('view', [
             'task' => $task,
             'replies' => $replies,
-            'task_files' => $task_files,
+            'taskFiles' => $taskFiles,
+            'taskAction' => $taskAction,
+            'repliesModel' => $repliesModel,
         ]);
     }
 
@@ -173,3 +201,17 @@ class TasksController extends SecuredController
         return $this->actionView($reply->task_id);
     }
 }
+
+// Возможные статусы:
+// const STATUS_NEW = 'new';
+// const STATUS_IN_PROGRESS = 'in_progress';
+// const STATUS_CANCELED = 'canceled';
+// const STATUS_FAILED = 'failed';
+// const STATUS_FINISHED = 'finished';
+
+// Возможные экшены:
+// const ACTION_RESPOND = 'respond';
+// const ACTION_START = 'start';
+// const ACTION_REFUSED = 'refused';
+// const ACTION_CANCELED = 'canceled';
+// const ACTION_FINISHED = 'finished';

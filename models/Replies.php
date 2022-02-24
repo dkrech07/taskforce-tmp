@@ -48,11 +48,11 @@ class Replies extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'dt_add' => 'Dt Add',
-            'rate' => 'Rate',
-            'description' => 'Description',
-            'executor_id' => 'Executor ID',
-            'task_id' => 'Task ID',
+            'dt_add' => 'Дата создания отклика',
+            'rate' => 'Цена исполнителя',
+            'description' => 'Комментарий исполнителя',
+            'executor_id' => 'ID исполнителя',
+            'task_id' => 'ID задачи',
         ];
     }
 
