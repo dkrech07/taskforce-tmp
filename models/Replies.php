@@ -48,11 +48,11 @@ class Replies extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'dt_add' => 'Дата создания отклика',
-            'rate' => 'Цена исполнителя',
-            'description' => 'Комментарий исполнителя',
-            'executor_id' => 'ID исполнителя',
-            'task_id' => 'ID задачи',
+            'dt_add' => 'Dt Add',
+            'rate' => 'Rate',
+            'description' => 'Description',
+            'executor_id' => 'Executor ID',
+            'task_id' => 'Task ID',
         ];
     }
 
@@ -64,6 +64,16 @@ class Replies extends \yii\db\ActiveRecord
     public function getExecutor()
     {
         return $this->hasOne(Profiles::className(), ['user_id' => 'executor_id']);
+    }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'executor_id']);
     }
 
     /**

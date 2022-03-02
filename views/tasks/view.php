@@ -3,13 +3,18 @@
 use yii\helpers\Html;
 use TaskForce\utils\NounPluralConverter;
 use TaskForce\utils\CustomHelpers;
+// use yii\bootstrap4\Modal;
 use yii\widgets\ActiveForm;
-use TaskForce\tasks\Task;
-use yii\bootstrap4\Modal;
+
+
+use app\widgets\ModalForm;
+use app\assets\ModalFormAsset;
+
+ModalFormAsset::register($this);
 
 $userId = Yii::$app->user->getId();
 
-// $taskActionLink = $taskAction->get_action_code() ?? null;
+$action = $taskAction->get_action_code();
 
 ?>
 
@@ -20,52 +25,28 @@ $userId = Yii::$app->user->getId();
     </div>
     <p class="task-description"><?= Html::encode($task->description); ?></p>
 
-
-    <!-- Модалка для исполнителя, отклика на новое задание -->
-    <?php if ($task->status === 'new') : ?>
-        <?php Modal::begin([
-            'title' => '<h2>Отправка отклика</h2>',
-            'toggleButton' => [
-                'label' => 'Откликнуться на задание',
-                'tag' => 'button',
-                'class' => 'button button--blue',
-            ],
-            'footer' => $task->name,
-        ]);
-        ?>
-        <?php $form = ActiveForm::begin(['id' => 'modal-form']); ?>
-        <?= $form->field($repliesModel, 'description')->textarea(['autofocus' => true]) ?>
-        <?= $form->field($repliesModel, 'rate')->input('number') ?>
-        <div class="form-group">
-            <button type="submit" class="modal-button">Отправить</button>
-            <button type="button" class="modal-button" data-dismiss="modal">Отменить</button>
-        </div>
-        <?php ActiveForm::end(); ?>
-        <?php Modal::end(); ?>
+    <!-- Исполнитель. Оставить отклик на задание; -->
+    <?php if ($action === 'ACTION_RESPOND' && CustomHelpers::checkExecutor($replies, $userId)) : ?>
+        <a href="#" class="button button--blue response-button">Откликнуться на задание</a>
+        <?= ModalForm::widget(['formType' => 'responseForm', 'formModel' => $responseFormModel]) ?>
     <?php endif; ?>
 
-    <!-- Модалка для исполнителя, для отказа от взятого в работу -->
-    <?php if ($task->status === 'in_progress') : ?>
-        <?php Modal::begin([
-            'title' => '<h2>Подвердите отказ от задания</h2>',
-            'toggleButton' => [
-                'label' => 'Отказ от задания',
-                'tag' => 'button',
-                'class' => 'button button--blue',
-            ],
-            'footer' => $task->name,
-        ]);
-        ?>
-        <?php $form = ActiveForm::begin(['id' => 'modal-form']); ?>
-        <?= $form->field($repliesModel, 'description')->textarea(['autofocus' => true]) ?>
-        <div class="form-group">
-            <button type="button" class="modal-button" data-dismiss="modal">Вернуться</button>
-            <button type="submit" class="modal-button">Отказаться</button>
-        </div>
-        <?php ActiveForm::end(); ?>
-        <?php Modal::end(); ?>
+    <!-- Исполнитель. Отказаться от выполнения задания; -->
+    <?php if ($action === 'ACTION_REFUSED') : ?>
+        <a href="#" class="button button--blue refuse-button">Отказаться от задания</a>
+        <?= ModalForm::widget(['formType' => 'refuseForm', 'formModel' => $refuseFormModel]) ?>
     <?php endif; ?>
 
+    <!-- Постановщник. Завершение задания; -->
+    <?php if ($action === 'ACTION_FINISHED') : ?>
+        <a href="#" class="button button--blue finished-button">Завершить задание</a>
+        <?= ModalForm::widget(['formType' => 'finishedForm', 'formModel' => $finishedFormModel]) ?>
+    <?php endif; ?>
+
+    <!-- Постановщик. Отменить задание; -->
+    <?php if ($action === 'ACTION_CANCELED') : ?>
+        <a href="<?= '/cancel/' . $task->id ?>" class="button button--blue">Отменить задание</a>
+    <?php endif; ?>
 
     <div class="task-map">
         <img class="map" src="/img/map.png" width="725" height="346" alt="<?= Html::encode($task->address); ?>">
@@ -73,44 +54,43 @@ $userId = Yii::$app->user->getId();
         <p class="map-address"><?= Html::encode($task->address) ?></p>
     </div>
 
-    <?php if (CustomHelpers::getCustomerOrExecutor($replies, $task, $userId)) : ?>
+    <?php if (CustomHelpers::checkCustomerOrExecutor($replies, $task, $userId)) : ?>
         <h4 class="head-regular">Отклики на задание</h4>
+    <?php endif; ?>
 
-        <?php foreach ($replies as $reply) : ?>
-
-            <?php if ($reply->executor_id === $userId || $task->customer_id == $userId) : ?>
-                <div class="response-card">
-                    <img class="customer-photo" src="<?= (Html::encode($reply->executor->avatar_link)); ?>" width="146" height="156" alt="Фото заказчиков">
-                    <div class="feedback-wrapper">
-                        <a href="#" class="link link--block link--big"></a>
-                        <div class="response-wrapper">
-                            <div class="stars-rating small">
-                                <?= CustomHelpers::getRatingStars(Html::encode($reply->executor->average_rating)); ?>
-                            </div>
-                            <p class="reviews"><?= (count($reply->opinion)); ?> <?= NounPluralConverter::getOpinionsTitle(count($reply->opinion)); ?></p>
+    <?php foreach ($replies as $reply) : ?>
+        <?php if ($reply->executor_id === $userId || $task->customer_id === $userId) : ?>
+            <div class="response-card">
+                <img class="customer-photo" src="<?= (Html::encode($reply->executor->avatar_link)); ?>" width="146" height="156" alt="Фото заказчиков">
+                <div class="feedback-wrapper">
+                    <a href="/user/view/<?= Html::encode($reply->user->id); ?>" class="link link--block link--big"><?= Html::encode($reply->user->name); ?></a>
+                    <div class="response-wrapper">
+                        <div class="stars-rating small">
+                            <?= CustomHelpers::getRatingStars(Html::encode($reply->executor->average_rating)); ?>
                         </div>
-                        <p class="response-message">
-                            <?= Html::encode($reply->description); ?>
-                        </p>
-
+                        <p class="reviews"><?= (count($reply->opinion)); ?> <?= NounPluralConverter::getOpinionsTitle(count($reply->opinion)); ?></p>
                     </div>
-                    <div class="feedback-wrapper">
-                        <p class="info-text"><span class="current-time"><?= NounPluralConverter::getTaskRelativeTime($reply->dt_add); ?></span></p>
-                        <p class="price price--small"><?= Html::encode($reply->rate); ?> ₽</p>
-                    </div>
-
-                    <?php if ($task->customer_id === $userId && !isset($reply->status) && CustomHelpers::checkRepliesStatus($replies)) : ?>
-                        <div class="button-popup">
-                            <a href="<?= '/accept/' . $reply->id ?>" class="button button--blue button--small">Принять</a>
-                            <a href="<?= '/reject/' . $reply->id ?>" class="button button--orange button--small">Отказать</a>
-                        </div>
-                    <?php endif; ?>
+                    <p class="response-message">
+                        <?= Html::encode($reply->description); ?>
+                    </p>
 
                 </div>
-            <?php endif; ?>
+                <div class="feedback-wrapper">
+                    <p class="info-text"><span class="current-time"><?= NounPluralConverter::getTaskRelativeTime($reply->dt_add); ?></span></p>
+                    <p class="price price--small"><?= Html::encode($reply->rate); ?> ₽</p>
+                </div>
+                <?php if ($task->customer_id === $userId && !isset($reply->status) && CustomHelpers::checkRepliesStatus($replies)) : ?>
+                    <div class="button-popup">
+                        <a href="<?= '/accept/' . $reply->id ?>" class="button button--blue button--small">Принять</a>
+                        <a href="<?= '/reject/' . $reply->id ?>" class="button button--orange button--small">Отказать</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    <?php endforeach; ?>
 
-        <?php endforeach; ?>
-    <?php endif; ?>
+
+
 </div>
 
 <div class="right-column">
@@ -128,11 +108,11 @@ $userId = Yii::$app->user->getId();
         </dl>
     </div>
 
-    <?php if (count($tasksFiles) > 0) : ?>
+    <?php if (count($task_files) > 0) : ?>
         <div class="right-card white file-card">
             <h4 class="head-card">Файлы задания</h4>
             <ul class="enumeration-list">
-                <?php foreach ($tasksFiles as $task_file) : ?>
+                <?php foreach ($task_files as $task_file) : ?>
                     <li class="enumeration-item">
                         <a target="_blank" href="<?= '/uploads/' . $task_file->link ?>" class="link link--block link--clip"><?= $task_file->link ?></a>
                         <p class="file-size"><?= CustomHelpers::getFileSize($task_file->link) ?> Кб</p>

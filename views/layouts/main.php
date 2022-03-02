@@ -16,13 +16,12 @@ AppAsset::register($this);
 
 $user = CustomHelpers::checkAuthorization();
 
-// Дополнитльная проверка на наличие данных пользователе в базе;
 if ($user) {
     $userName = $user->name;
+    $userProfile = CustomHelpers::getUserProfile($user->id);
 } else {
     $userName = 'Анонимный пользователь';
 }
-
 ?>
 <?php $this->beginPage(); ?>
 <!DOCTYPE html>
@@ -69,7 +68,7 @@ if ($user) {
         <?php if (Url::current() !== Url::to(['site/registration'])) : ?>
             <div class="user-block">
                 <a href="#">
-                    <img class="user-photo" src="/img/man-glasses.png" width="55" height="55" alt="Аватар">
+                    <img class="user-photo" src="<?= Url::to($userProfile->avatar_link); ?>" width="55" height="55" alt="Аватар">
                 </a>
                 <div class="user-menu">
                     <p class="user-name"><?= $userName ?></p>

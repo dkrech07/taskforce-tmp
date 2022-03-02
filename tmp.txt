@@ -64,3 +64,5 @@ http://taskforce/landing
 
 Страница создания задачи
 http://taskforce/tasks/add
+
+                <p class="task">Задание «<a href="#" class="link link--small"><?= Html::encode($opinion->task); ?></a>» выполнено</p>

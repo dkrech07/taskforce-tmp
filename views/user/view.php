@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use TaskForce\utils\CustomHelpers;
 use TaskForce\utils\NounPluralConverter;
+use yii\helpers\Url;
 ?>
 
 <div class="left-column">
@@ -41,12 +42,15 @@ use TaskForce\utils\NounPluralConverter;
         </div>
     </div>
     <h4 class="head-regular">Отзывы заказчиков</h4>
+
     <?php foreach ($opinions as $opinion) : ?>
+        <?php
+        ?>
         <div class="response-card">
             <img class="customer-photo" src="<?= Html::encode($opinion->profile->avatar_link); ?>" width="120" height="127" alt="Фото заказчиков">
             <div class="feedback-wrapper">
                 <p class="feedback"><?= Html::encode($opinion->description); ?></p>
-                <p class="task">Задание «<a href="#" class="link link--small"><?= Html::encode($opinion->task->name); ?></a>» выполнено</p>
+                <p class="task">Задание «<a href="<?= Url::to('/tasks/view/' . $opinion->task->id) ?>" class="link link--small"><?= Html::encode($opinion->task->name); ?></a>» выполнено</p>
             </div>
             <div class="feedback-wrapper">
                 <div class="stars-rating small">
@@ -56,6 +60,7 @@ use TaskForce\utils\NounPluralConverter;
             </div>
         </div>
     <?php endforeach; ?>
+
 </div>
 <div class="right-column">
     <div class="right-card black">

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace TaskForce\utils;
 
+use app\models\Profiles;
 use Yii;
+use app\models\Users;
 use app\models\User;
 use yii\db\Expression;
 
@@ -108,7 +110,16 @@ class CustomHelpers
         if (Yii::$app->user->isGuest) {
             return null;
         }
+
         return User::findIdentity(Yii::$app->user->getId());
+    }
+
+    // Проверка на авторизацию, получение данных пользователя;
+    public static function getUserProfile($userId): ?object
+    {
+        return Profiles::find()
+            ->where(['user_id' => $userId])
+            ->one();
     }
 
     public static function getCurrentDate()
@@ -134,31 +145,31 @@ class CustomHelpers
         return ceil($fileSize);
     }
 
-    // Для откликов на задачу: проверяет является ли поьзователь просмотривающий задачу
-    // авторизованным пользователм-постановщиком
-    // или откликнувшимся на задачу
-    // Если пользователь постановщик или откликнулся на задачу возвращает id, если нет - false;
-    public static function getCustomerOrExecutor(array $replies, object $task, int $userId)
+    // Проверяет, что для задачи есть отклики и пользователь является заказчиком или исполнителем;
+    // В зависимости от результата показывает или скрывает заголовок блока "Список откликов" на странице;
+    public static function checkCustomerOrExecutor(array $replies, object $task, int $userId)
     {
-        if (count($replies) === 0) {
-            return false;
-        }
+        // Проверяю есть ли отклики для выбранной задачи;
+        if (count($replies) > 0) {
 
-        if ($task['customer_id'] === $userId) {
-            return $userId;
-        }
-
-        foreach ($replies as $reply) {
-            if ($reply['executor_id'] === $userId) {
+            // Проверяю является ли авторизованный пользователь постановщиком задачи;
+            if ($task['customer_id'] === $userId) {
                 return $userId;
             }
-        }
 
+            // Проверяю является ли авторизованный пользователь исполнителем задачи;
+            foreach ($replies as $reply) {
+                if ($reply['executor_id'] === $userId) {
+                    return $userId;
+                }
+            }
+        }
+        // Если откликов нет И пользователь не постановщик ИЛИ не исполнитель - возвращаю false;
         return false;
     }
 
     // Проверяет есть ли среди откликов к задаче хотя бы один со статусом "Принят"
-    // Если задача со статусом "Принят" есть, возвращает false;
+    // Если задача со статусом "Принят" есть, возвращает false (позволяет спрятать кнопки принять/отказать у всех задач);
     public static function checkRepliesStatus(array $replies)
     {
         foreach ($replies as $reply) {
@@ -166,6 +177,17 @@ class CustomHelpers
                 return false;
             }
         }
+        return true;
+    }
+
+    public static function checkExecutor(array $replies, int $userId)
+    {
+        foreach ($replies as $reply) {
+            if ($reply['executor_id'] === $userId) {
+                return false;
+            }
+        }
+
         return true;
     }
 }

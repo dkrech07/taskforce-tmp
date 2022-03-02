@@ -7,17 +7,25 @@ use app\models\TasksSearchForm;
 use app\services\TasksFilterService;
 use yii\web\NotFoundHttpException;
 use app\services\TasksService;
+use app\services\RepliesService;
 use app\services\CategoriesService;
 use app\models\Tasks;
 use app\models\Categories;
 use app\models\AddTaskForm;
 use app\models\Replies;
+use app\models\RefuseForm;
+use app\models\FinishedForm;
+use app\services\OpinionsService;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use yii\web\UploadedFile;
+use yii\web\ForbiddenHttpException;
 use TaskForce\tasks\Task;
-use TaskForce\utils\CustomHelpers;
-use app\services\RepliesServices;
+
+
+// Формы для задач
+use app\models\ResponseForm;
+
 
 class TasksController extends SecuredController
 {
@@ -63,46 +71,80 @@ class TasksController extends SecuredController
 
     public function actionView(int $id)
     {
+        $userId = Yii::$app->user->getId();
         $tasksService = new TasksService;
         $task = $tasksService->getTask($id);
-        $replies = $tasksService->getReplies($id);
-        $tasksFiles = $tasksService->getTaskFiles($id);
 
         if (!$task) {
             throw new NotFoundHttpException;
         }
 
-        $customer_id = $task->customer_id;
-        $executor_id = $task->executor_id;
-        // $executor_id = null;
-        $user_id = CustomHelpers::checkAuthorization()->id;
-        $current_status = $task->status;
-        $Actions = new Task($customer_id, $executor_id, $user_id, $current_status);
-        $taskAction = $Actions->get_user_actions($current_status);
-        print_r($taskAction);
+        $customerId = $task->customer_id;
+        $executorId = $task->executor_id;
+        $currentStatus = $task->status;
+        $Actions = new Task($customerId, $executorId, $userId, $currentStatus);
+        $taskAction = $Actions->get_user_actions($currentStatus);
+        $replies = $tasksService->getReplies($id);
+        $task_files = $tasksService->getTaskFiles($id);
 
-        $repliesModel = new Replies();
+        $responseFormModel = new ResponseForm();
+        $refuseFormModel = new RefuseForm();
+        $finishedFormModel = new FinishedForm();
 
         if (Yii::$app->request->isPost) {
-            $repliesModel->load(Yii::$app->request->post());
+            // Исполнитель. Оставить отклик на задание;
+            if (Yii::$app->request->post('response') === 'response') {
+                $responseFormModel->load(Yii::$app->request->post());
 
-            // if (Yii::$app->request->isAjax) {
-            //     Yii::$app->response->format = Response::FORMAT_JSON;
-            //     return ActiveForm::validate($repliesModel);
-            // }
+                if (Yii::$app->request->isAjax) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return ActiveForm::validate($responseFormModel);
+                }
 
-            if ($repliesModel->validate()) {
-                (new RepliesServices())->createReply($user_id, $id, $repliesModel);
-                // $this->redirect(['tasks/view', 'id' => $taskId]);
+                if ($responseFormModel->validate()) {
+                    (new RepliesService())->createReply($userId, $id, $responseFormModel);
+                    return $this->refresh();
+                }
+            }
+
+            // Исполнитель. Отказаться от выполнения задания;
+            if (Yii::$app->request->post('refuse') === 'refuse') {
+                $refuseFormModel->load(Yii::$app->request->post());
+                if (Yii::$app->request->isAjax) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return ActiveForm::validate($refuseFormModel);
+                }
+
+                if ($refuseFormModel->validate()) {
+                    (new RepliesService())->RefuseTask($userId, $id, $refuseFormModel);
+                    return $this->refresh();
+                }
+            }
+
+            // Заказчик. Завершить задание;
+            if (Yii::$app->request->post('finished') === 'finished') {
+                $finishedFormModel->load(Yii::$app->request->post());
+                if (Yii::$app->request->isAjax) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+
+                    return ActiveForm::validate($finishedFormModel);
+                }
+
+                if ($finishedFormModel->validate()) {
+                    (new OpinionsService())->finishTask($id, $finishedFormModel);
+                    return $this->refresh();
+                }
             }
         }
 
         return $this->render('view', [
             'task' => $task,
             'replies' => $replies,
-            'tasksFiles' => $tasksFiles,
+            'task_files' => $task_files,
+            'responseFormModel' => $responseFormModel,
+            'refuseFormModel' => $refuseFormModel,
+            'finishedFormModel' => $finishedFormModel,
             'taskAction' => $taskAction,
-            'repliesModel' => $repliesModel,
         ]);
     }
 
@@ -136,84 +178,34 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function acceptReply($reply)
-    {
-        //меняем статус отклика на принято
-        // $modelReplies = Replies::findOne(['id' => $reply->id]);
-        // $modelTasks = Tasks::findOne(['id' => $reply->id]);
-
-        // Найти отзыв
-        // Найти задачу
-        // Записать в задачу отзыв (id отзыва)
-        // Поменять статус задачи на в работе
-
-        // $model->status = Reply::STATUS_ACCEPTED;
-        // $model->update();
-        // //стартуем задание
-        // $task = Task::findOne(['id' => $reply->task_id]);
-        // if (Action::doAction(Action::ACTION_START, $task, $this->user->id)) {
-        //     $task->contr_id = $model->contr_id;
-        //     if ($task->update() === false) {
-        //         throw new \Exception('Не удалось изменить данные задачи id ' . $task->id);
-        //     }
-        // }
-    }
-
-    /**
-     * Принять отклик исполнителя
-     * @param int $id id отклика исполнителя
-     */
+    // Заказчик. Принять отклик исполнителя;
     public function actionAccept(int $id)
     {
-        $reply = Replies::findOne(['id' => $id]);
-        $task = Tasks::findOne(['id' => $reply->task_id]);
+        $RepliesService = new RepliesService;
+        $reply = $RepliesService->AcceptReply($id);
 
-        $reply->status = 1;
-
-        $task->executor_id = $reply->executor_id;
-        $task->status = 'in_progress';
-
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            $reply->save();
-            $task->save();
-            $transaction->commit();
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-        }
-
-        return $this->actionView($reply->task_id);
+        return $this->redirect(['tasks/view/' . $reply->task_id]);
     }
 
-    /**
-     * Отклонить отклик исполнителя
-     * @param int $id id отклика исполнителя
-     */
+    // Заказчик. Отменять отклик исполнителя;
     public function actionReject(int $id)
     {
         $reply = Replies::findOne(['id' => $id]);
         $reply->status = 0;
         $reply->save();
+        return $this->redirect(['tasks/view/' . $reply->task_id]);
+    }
 
-        // $this->rejectReply($reply);
+    // Заказчик .Отменить задание;
+    public function actionCancel(int $id)
+    {
+        $tasksModel = Tasks::findOne(['id' => $id]);
+        if (Yii::$app->user->getId() !== $tasksModel->customer_id) {
+            throw new ForbiddenHttpException('У Вас нет прав отменить это задание!');
+        }
 
-        return $this->actionView($reply->task_id);
+        $tasksModel->status = 'canceled';
+        $tasksModel->update();
+        return $this->redirect(['tasks/view/' . $id]);
     }
 }
-
-// Возможные статусы:
-// const STATUS_NEW = 'new';
-// const STATUS_IN_PROGRESS = 'in_progress';
-// const STATUS_CANCELED = 'canceled';
-// const STATUS_FAILED = 'failed';
-// const STATUS_FINISHED = 'finished';
-
-// Возможные экшены:
-// const ACTION_RESPOND = 'respond';
-// const ACTION_START = 'start';
-// const ACTION_REFUSED = 'refused';
-// const ACTION_CANCELED = 'canceled';
-// const ACTION_FINISHED = 'finished';

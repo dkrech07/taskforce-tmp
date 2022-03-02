@@ -30,7 +30,7 @@ class TasksService
     public function getReplies($id)
     {
         return Replies::find()
-            ->joinWith('executor', 'opinion')
+            ->joinWith('executor', 'user') //opinion
             ->where(['replies.task_id' => $id])
             ->all();
     }
@@ -46,6 +46,7 @@ class TasksService
         $task->status = 'new';
         $task->dt_add = CustomHelpers::getCurrentDate();
         $task->deadline = $addTaskFormModel->deadline;
+        $task->budget = $addTaskFormModel->budget;
 
         $task->save();
         $task_id = $task->id;
