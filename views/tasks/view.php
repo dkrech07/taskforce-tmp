@@ -16,6 +16,11 @@ $userId = Yii::$app->user->getId();
 
 $action = $taskAction->get_action_code();
 
+$apiKey = Yii::$app->params['geocoderApiKey'];
+
+$this->registerJsFile("https://api-maps.yandex.ru/2.1/?apikey={$apiKey}&lang=ru_RU");
+$this->registerJsFile('/js/yandex-map.js');
+
 ?>
 
 <div class="left-column">
@@ -47,9 +52,16 @@ $action = $taskAction->get_action_code();
     <?php if ($action === 'ACTION_CANCELED') : ?>
         <a href="<?= '/cancel/' . $task->id ?>" class="button button--blue">Отменить задание</a>
     <?php endif; ?>
-
+    <!-- <?php
+            print('ok');
+            ?> -->
     <div class="task-map">
-        <img class="map" src="/img/map.png" width="725" height="346" alt="<?= Html::encode($task->address); ?>">
+        <!-- <img class="map" src="/img/map.png" width="725" height="346" alt="<?= Html::encode($task->address); ?>"> -->
+
+        <?php if (isset($task->latitude, $task->longitude)) : ?>
+            <div id="map" style="width: 725px; height: 346px" data-lat="<?= Html::encode($task->latitude) ?>" data-long="<?= Html::encode($task->longitude) ?>"></div>
+        <?php endif; ?>
+
         <p class="map-address town"><?= Html::encode(isset($task->city->city)); ?></p>
         <p class="map-address"><?= Html::encode($task->address) ?></p>
     </div>

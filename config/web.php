@@ -57,6 +57,7 @@ $config = [
             'enableStrictParsing' => false,
             'rules' => [
                 '/' => '/landing/index',
+                'geocoder/<geocode>' => 'api/geocoder',
                 'tasks/view/<id>' => 'tasks/view',
                 'user/view/<id>' => 'user/view',
                 'accept/<id:\d+>' => 'tasks/accept',
