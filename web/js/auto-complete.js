@@ -8,7 +8,7 @@ const autoCompleteJS = new autoComplete({
                 const source = await fetch(`${apiUrl}/${query}`);
                 // Data is array of `Objects` | `Strings`
                 const data = await source.json();
-
+                console.log(source);
                 return data;
             } catch (error) {
                 return error;

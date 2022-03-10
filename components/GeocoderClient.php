@@ -19,7 +19,7 @@ class GeocoderClient extends Component
      * @param string $geocode
      * @return array
      */
-    public function getCoords(string $geocode): array
+    public function getCoords(string $geocode) //: array
     {
         $client = new Client(['base_uri' => self::BASE_URL]);
 
