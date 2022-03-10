@@ -48,19 +48,21 @@ class TasksService
         $task->deadline = $addTaskFormModel->deadline;
         $task->budget = $addTaskFormModel->budget;
 
-        $task->save();
-        $task_id = $task->id;
+        // print_r($addTaskFormModel);
 
-        foreach ($addTaskFormModel->files as $file) {
-            $file_path = uniqid('file_') . '.' . $file->extension;
-            $file->saveAs(Yii::getAlias('@webroot') . '/uploads/' . $file_path);
+        // $task->save();
+        // $task_id = $task->id;
 
-            $task_file = new TasksFiles;
-            $task_file->link = $file_path;
-            $task_file->task_id = $task_id;
-            $task_file->save();
-        }
+        // foreach ($addTaskFormModel->files as $file) {
+        //     $file_path = uniqid('file_') . '.' . $file->extension;
+        //     $file->saveAs(Yii::getAlias('@webroot') . '/uploads/' . $file_path);
 
-        return $task_id;
+        //     $task_file = new TasksFiles;
+        //     $task_file->link = $file_path;
+        //     $task_file->task_id = $task_id;
+        //     $task_file->save();
+        // }
+
+        // return $task_id;
     }
 }

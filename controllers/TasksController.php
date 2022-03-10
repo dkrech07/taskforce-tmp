@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
 use yii\web\UploadedFile;
 use yii\web\ForbiddenHttpException;
 use TaskForce\tasks\Task;
-
+use app\models\Cities;
 
 // Формы для задач
 use app\models\ResponseForm;
@@ -172,9 +172,16 @@ class TasksController extends SecuredController
         $categoriesModel = new CategoriesService();
         $categories = $categoriesModel->findAll();
 
+        $cities = Cities::find()
+            ->select(['id', 'city'])
+            ->indexBy('id')
+            ->asArray()
+            ->all();
+
         return $this->render('add', [
             'addTaskFormModel' => $addTaskFormModel,
-            'categories' => $categories
+            'categories' => $categories,
+            'cities' => $cities,
         ]);
     }
 

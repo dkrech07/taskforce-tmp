@@ -40,6 +40,10 @@ class AddTaskForm extends Model
         ];
     }
 
+    //     [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name',
+    //     'message' => 'Название города не найдено в таблице городов'],
+    //     [['location'], 'string'],
+
     public function attributeLabels()
     {
         return [
