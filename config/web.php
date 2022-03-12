@@ -12,9 +12,6 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
-        'geocoder' => [
-            'class' => 'app\components\GeocoderClient'
-        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'r1gj23OkV1X002KMTzPW3rFYaVZUOJqz',

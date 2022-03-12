@@ -1,20 +1,15 @@
 const autoCompleteJS = new autoComplete({
-    // placeHolder: 'Search for Food...',
     data: {
         src: async query => {
             try {
-                // Fetch Data from external Source
                 const apiUrl = autoCompleteJS.input.dataset.apiUrl;
                 const source = await fetch(`${apiUrl}/${query}`);
-                // Data is array of `Objects` | `Strings`
                 const data = await source.json();
-                console.log(source);
                 return data;
             } catch (error) {
                 return error;
             }
         },
-        // Data 'Object' key to be searched
         keys: ['text']
     },
     resultItem: {
@@ -23,12 +18,18 @@ const autoCompleteJS = new autoComplete({
     events: {
         input: {
             selection: event => {
-                const selection = event.detail.selection.value;
-                autoCompleteJS.input.value = selection.text;
+                const selectionValue = event.detail.selection.value;
+                autoCompleteJS.input.value = selectionValue.text;
 
-                document.getElementById('lat').value = selection.pos[1];
-                document.getElementById('long').value = selection.pos[0];
-                document.getElementById('city').value = selection.city ? selection.city : 0;
+                const latitudeInputElement = document.querySelector('#latitude');
+                const longitudeInputElement = document.querySelector('#longitude');
+                const cityNameInputElement = document.querySelector('#city_name');
+                const addressInputElement = document.querySelector('#address');
+                
+                latitudeInputElement.value = selectionValue.pos[1];
+                longitudeInputElement.value = selectionValue.pos[0];
+                cityNameInputElement.value = selectionValue.city ? selectionValue.city : 0;
+                addressInputElement.value = selectionValue.text ? selectionValue.text : 0;
             }
         }
     }

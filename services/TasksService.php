@@ -7,6 +7,7 @@ use app\models\Tasks;
 use app\models\Replies;
 use app\models\AddTaskForm;
 use app\models\TasksFiles;
+use app\models\Cities;
 use TaskForce\utils\CustomHelpers;
 
 class TasksService
@@ -48,21 +49,30 @@ class TasksService
         $task->deadline = $addTaskFormModel->deadline;
         $task->budget = $addTaskFormModel->budget;
 
-        // print_r($addTaskFormModel);
+        $city = Cities::find()
+            ->where(['cities.city' => $addTaskFormModel->city_name])
+            ->one();
 
-        // $task->save();
-        // $task_id = $task->id;
+        if (isset($city)) {
+            $task->city_id = $city['id'];
+            $task->address = $addTaskFormModel->address;
+            $task->latitude = $addTaskFormModel->latitude;
+            $task->longitude = $addTaskFormModel->longitude;
+        }
 
-        // foreach ($addTaskFormModel->files as $file) {
-        //     $file_path = uniqid('file_') . '.' . $file->extension;
-        //     $file->saveAs(Yii::getAlias('@webroot') . '/uploads/' . $file_path);
+        $task->save();
+        $task_id = $task->id;
 
-        //     $task_file = new TasksFiles;
-        //     $task_file->link = $file_path;
-        //     $task_file->task_id = $task_id;
-        //     $task_file->save();
-        // }
+        foreach ($addTaskFormModel->files as $file) {
+            $file_path = uniqid('file_') . '.' . $file->extension;
+            $file->saveAs(Yii::getAlias('@webroot') . '/uploads/' . $file_path);
 
-        // return $task_id;
+            $task_file = new TasksFiles;
+            $task_file->link = $file_path;
+            $task_file->task_id = $task_id;
+            $task_file->save();
+        }
+
+        return $task_id;
     }
 }

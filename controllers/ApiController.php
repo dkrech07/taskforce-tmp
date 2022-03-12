@@ -3,15 +3,15 @@
 namespace app\controllers;
 
 use Yii;
-use yii\web\Controller;
 use yii\web\Response;
+use app\services\GeocoderService;
 
-class ApiController extends Controller
+class ApiController extends SecuredController
 {
+
     public function actionGeocoder(string $geocode)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-
-        return Yii::$app->geocoder->getCoords($geocode);
+        return (new GeocoderService())->getCoords($geocode);
     }
 }

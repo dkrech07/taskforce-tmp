@@ -1,16 +1,11 @@
-const map = document.getElementById('map').dataset;
+const yandexMap = document.querySelector('#map');
 
-const init = () => {
-    const myMap = new ymaps.Map("map", {
-        // Координаты центра карты.
-        // Порядок по умолчанию: «широта, долгота».
-        // Чтобы не определять координаты центра карты вручную,
-        // воспользуйтесь инструментом Определение координат.
-        center: [map.lat, map.long],
-        // Уровень масштабирования. Допустимые значения:
-        // от 0 (весь мир) до 19.
-        zoom: 7
-    });
+if (yandexMap) {
+    ymaps.ready(init);
+    function init(){
+        var myMap = new ymaps.Map("map", {
+            center: [yandexMap.dataset.latitude, yandexMap.dataset.longitude],
+            zoom: 7
+        });
+    }
 }
-
-ymaps.ready(init);

@@ -15,6 +15,7 @@ class AddTaskForm extends Model
     public $latitude;
     public $longitude;
     public $city_name;
+    public $address;
     public $budget;
     public $deadline;
     public $files;
@@ -29,8 +30,12 @@ class AddTaskForm extends Model
             [['category_id'], 'integer'], // Категория - всегда число;
             [['category_id'], 'exist', 'targetClass' => Categories::class, 'targetAttribute' => 'id'], // Категория: првоеряем на существование, ссылаемся на таблицу Категорий по id;
             [['location', 'city_name'], 'string'], // Локация, название города - текстовые данные;
+            [['address'], 'string'], // Локация, название города - текстовые данные;
             [['latitude', 'longitude'], 'string'], // Широта и долгота - текстовые данные;
-            [['city_name'], 'exist', 'targetClass' => Cities::class, 'targetAttribute' => 'name'], // Название города: проверяем на существование, ссылаемся на таблицу с городами по названию (имени) города;
+            [
+                ['city_name'], 'exist', 'targetClass' => Cities::class, 'targetAttribute' => 'city',
+                'message' => 'Название города не найдено в таблице городов'
+            ],
             [['budget'], 'integer', 'min' => 1], // Бюджет - числовое значение, задаем минимальную сумму;
             [
                 ['deadline'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'), // Проверка даты;
@@ -39,10 +44,6 @@ class AddTaskForm extends Model
             [['files'], 'file', 'maxFiles' => 10],
         ];
     }
-
-    //     [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name',
-    //     'message' => 'Название города не найдено в таблице городов'],
-    //     [['location'], 'string'],
 
     public function attributeLabels()
     {
