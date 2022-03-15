@@ -2,6 +2,7 @@
 
 use yii\bootstrap4\Html;
 use yii\widgets\ActiveForm;
+use yii\authclient\widgets\AuthChoice;
 use yii\helpers\Url;
 ?>
 
@@ -20,6 +21,28 @@ use yii\helpers\Url;
     <?= $form->field($loginForm, 'password')->passwordInput() ?>
 
     <?= Html::submitButton('Войти', ['class' => 'button']) ?>
+
+
+    <?= yii\authclient\widgets\AuthChoice::widget([
+        'baseAuthUrl' => ['site/auth'],
+        'popupMode' => true,
+    ]) ?>
+
+    <!-- <?php $authChoice = AuthChoice::begin([
+                'baseAuthUrl' => ['site/auth'],
+                'popupMode' => false
+            ]); ?>
+
+    <?= $authChoice->clientLink(
+        $authChoice->getClients()['vkontakte'],
+        'Вход через вконтакте',
+        [
+            'style' => 'align-self: stretch; margin-top: 15px; text-align: center;',
+            'class' => 'button',
+        ]
+    ); ?>
+
+    <?php AuthChoice::end(); ?> -->
 
     <?php $form = ActiveForm::end(); ?>
 

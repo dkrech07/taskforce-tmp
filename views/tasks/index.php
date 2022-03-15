@@ -68,7 +68,7 @@ use TaskForce\utils\NounPluralConverter;
                                 settype($model->categories, 'array');
                                 $checked = in_array($value, $model->categories) ? ' checked' : '';
                                 $input = "<input type=\"checkbox\" name=\"{$name}\" id=\"{$value}\" value=\"{$value}\"{$checked}>";
-                                $label = "<label class=\"control-label\" for=\"{$value}\">{$label}</label>";
+                                $label = "<label class=\"control-label\" for=\"{$value}\">{$label}</label><br>";
                                 return "{$input}{$label}";
                             }
                         ]
