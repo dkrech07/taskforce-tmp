@@ -9,6 +9,8 @@ use app\models\Specializations;
 use app\models\Opinions;
 use app\models\Users;
 use app\models\User;
+use app\models\Auth;
+use app\models\Cities;
 use app\models\RegistrationForm;
 use TaskForce\utils\CustomHelpers;
 
@@ -87,59 +89,44 @@ class UserService
         }
     }
 
-    public function signupVKUser($attributes, $source)
+    public function saveNewVkontakteProfile($attributes, $source)
     {
         $user = new Users();
         $profile = new Profiles();
-        $RegistrationModel = new RegistrationForm();
-        $user->city_id = 1; // Временно задал city_id = 1;
+        // $auth = new Auth();
 
+        if (isset($attributes['city']['title'])) {
+            $cityVk = $attributes['city']['title'];
+
+            $city = Cities::findOne(['city' => $cityVk]);
+            if (isset($city)) {
+                $user->city_id = $city['id'];
+            }
+        }
+
+        $user->role = 1;
         $user->name = "{$attributes['first_name']} {$attributes['last_name']}";
-        $user->email = $RegistrationModel->email;
+        $user->email = $attributes['email'];
+        $passwordHash = Yii::$app->getSecurity()->generatePasswordHash(mt_rand(8, 10));
+        $user->password = $passwordHash;
+        $user->dt_add = CustomHelpers::getCurrentDate(); //date("Y.m.d H:i:s");
 
-        print_r($user);
-        // $signupForm = new SignupForm();
-        // $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
-        // $signupForm->email = $attributes['email'];
-        // $signupForm->city_id = 1; //(new CityService())->findByName($attributes['city']['title'])->id ?? 1;
-        // $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
-        // $signupForm->password_repeat = $passwd;
-        // $signupForm->is_executor = 1;
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user->save();
+            $profile->user_id = $user->id;
+            $profile->avatar_link = '/img/avatars/' . random_int(1, 5) . '.png';
+            $profile->average_rating = 0;
+            $profile->save();
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
 
-        // $transaction = Yii::$app->db->beginTransaction();
-        // try {
-        //     $user = $this->create($signupForm);
-        //     (new AuthService())->create($user->id, $source, $attributes['id']);
-        //     $transaction->commit();
-
-        //     return true;
-        // } catch (\Throwable $e) {
-        //     $transaction->rollBack();
-
-        //     return false;
-        // }
-
-
-
-        // $user->role = $RegistrationModel->role;
-        // $passwordHash = Yii::$app->getSecurity()->generatePasswordHash($RegistrationModel->password);
-        // $user->password = $passwordHash;
-        // $user->dt_add = CustomHelpers::getCurrentDate(); //date("Y.m.d H:i:s");
-
-        // $transaction = Yii::$app->db->beginTransaction();
-        // try {
-        //     $user->save();
-        //     $profile->user_id = $user->id;
-        //     $profile->avatar_link = '/img/avatars/' . random_int(1, 5) . '.png';
-        //     $profile->average_rating = 0;
-        //     $profile->save();
-        //     $transaction->commit();
-        // } catch (\Exception $e) {
-        //     $transaction->rollBack();
-        //     throw $e;
-        // } catch (\Throwable $e) {
-        //     $transaction->rollBack();
-        // }
+        return $user;
     }
 
     /**

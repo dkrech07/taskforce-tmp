@@ -12,7 +12,7 @@ class AuthService
      * @param int $sourceId
      * @return bool
      */
-    public function create(int $userId, string $source, string $sourceId): bool
+    public function saveVkAuth(int $userId, string $source, string $sourceId): bool
     {
         $auth = new Auth();
 
