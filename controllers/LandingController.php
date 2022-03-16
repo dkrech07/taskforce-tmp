@@ -50,7 +50,9 @@ class LandingController extends Controller
             if ($loginForm->validate()) { // Запустим валидацию формы;
                 $user = $loginForm->getUser(); // Если валидация прошла, то получим модель найденного пользователя из формы;
                 Yii::$app->user->login($user); //Вызываем логин пользователя средствами встроенного компонента User;
-
+                // print_r($user);
+                // print('<br>');
+                // exit;
                 $this->redirect('/tasks/index'); // Переадресуем на страницу списка задач;
             }
         }

@@ -30,6 +30,6 @@ class AuthService
      */
     public function findOne(string $source, string $sourceId): ?Auth
     {
-        return Auth::findOne(['source' => $source, 'source_id' => $sourceId]);
+        return Auth::findOne(['source' => $source, 'source_id' => $sourceId]); // Ищем пользователя по id пользователя и id клиента = 'vkontakte';
     }
 }

@@ -25,7 +25,7 @@ use yii\helpers\Url;
 
     <?= yii\authclient\widgets\AuthChoice::widget([
         'baseAuthUrl' => ['site/auth'],
-        'popupMode' => true,
+        'popupMode' => false,
     ]) ?>
 
     <!-- <?php $authChoice = AuthChoice::begin([

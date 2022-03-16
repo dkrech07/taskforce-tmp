@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\RegistrationForm;
 use app\models\Cities;
+use app\models\Users;
 use app\services\UserService;
 use app\services\AuthService;
 use yii\web\Controller;
@@ -29,20 +30,96 @@ class SiteController extends Controller
 
     public function onAuthSuccess($client)
     {
-        // (new AuthHandler($client))->handle();
-        $attributes = $client->getUserAttributes();
-        $sourceId = ArrayHelper::getValue($attributes, 'id');
-        $nickname = ArrayHelper::getValue($attributes, 'login');
+
+        $attributes = $client->getUserAttributes(); // Данные пользователя;
+        $sourceId = ArrayHelper::getValue($attributes, 'id'); // id пользователя
+        $source = $client->getId(); // id клиента (vkontakte)
+
+        // Если пользователь найден по id и source ID  в таблице Auth, авторизовать его по данным из Auth;
+        $auth = (new AuthService())->findOne($source, $sourceId);
+        if (isset($auth)) {
+            Yii::$app->user->login($auth->user); //Вызываем логин пользователя средствами встроенного компонента User;
+            print_r($auth->user);
+            exit;
+        }
+
+        // Условие: Если пользователь ранее не регистрировался через Вконтатке;
+        $email = ArrayHelper::getValue($attributes, 'email');
+        // Запрашиваем email пользователя из Вконтакте и проверяем есть ли он (указывал ли его пользователь в Вк);
+        if (isset($email)) {
+
+            // Условие: Но его email из Вконтакте совпадает с email в таблице Users;
+            // Добавляем в таблицу Auth запись, ссылающующся на таблицу Users;
+            $user = (new UserService())->findByEmail($email); // Ищем пользователя по email из Вк;
+            if ($user) {
+                (new AuthService())->create($user->id, $source, $sourceId);
+                // (new UserService())->login($email);
+                // Yii::$app->user->login($email); - временно закомментировал
+                // Условие: И его email из Вконтакте не совпадает с email  в таблице Users;
+                // Регистрируем нового пользователя: зоздаем новую запись в таблице Auth и Users;
+            } elseif ((new UserService())->signupVKUser($attributes, $source)) {
+                // Yii::$app->user->login($email); - временно закомментировал
+            }
+        }
+
+        // print_r($attributes);
+        // print('<br>');
+        // print_r($sourceId);
+        // print('<br>');
+        // print_r($source);
+        // print('<br>');
+        // print_r($email);
+        // print('<br>');
+        // exit;
+
+        // if ($auth = (new AuthService())->findOne($source, $sourceId)) {
+
+        //     // (new UserService())->login($auth->user->email);
+
+        //     Yii::$app->user->login($auth->user->email);
+        //     return $this->goHome();
+        // }
 
 
-        $source = $client->getId();
+        // if ($email) {
+        //     $userEmail = Users::find()
+        //         ->where(['email' => $email])
+        //         ->one();
 
-        print($sourceId);
-        print('<br>');
-        print($nickname);
-        print('<br>');
-        print_r($attributes);
-        exit;
+        //     if ($userEmail) {
+        //         // (new AuthService())->create($user->id, $source, $sourceId);
+        //         Yii::$app->user->login($auth->user->email);
+        //         return $this->goHome();
+        //     }
+
+        // Yii::$app->user->login($user); //Вызываем логин пользователя средствами встроенного компонента User;
+
+        // $this->redirect('/tasks/index'); // Переадресуем на страницу списка задач;
+
+        // elseif ((new UserService())->signupVKUser($attributes, $source)) {
+        //     (new UserService())->login($email);
+        // }
+        // }
+
+
+        // if ($email = ArrayHelper::getValue($attributes, 'email')) {
+
+        //     if ($user = (new UserService())->findByEmail($email)) {
+        //         (new AuthService())->create($user->id, $source, $sourceId);
+        //         (new UserService())->login($email);
+        //     } elseif ((new UserService())->signupVKUser($attributes, $source)) {
+        //         (new UserService())->login($email);
+        //     }
+        // }
+
+        // $source = $client->getId();
+
+        // print($sourceId);
+        // print('<br>');
+        // print($nickname);
+        // print('<br>');
+        // print_r($attributes);
+        // exit;
 
         // if ($auth = (new AuthService())->findOne($source, $sourceId)) {
         //     (new UserService())->login($auth->user->email);
@@ -56,7 +133,7 @@ class SiteController extends Controller
         //     }
         // }
 
-        // return $this->goHome();
+        return $this->goHome();
     }
 
     // Применяет правила авторизации к контроллерам;
