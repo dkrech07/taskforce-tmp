@@ -15,7 +15,10 @@ if ($user) {
 } else {
     $userName = 'Анонимный пользователь';
 }
+
+$currentUrl = Yii::$app->request->url;
 ?>
+
 <?php $this->beginPage(); ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" class="h-100">
@@ -39,14 +42,14 @@ if ($user) {
             <?php if (Url::current() !== Url::to(['site/registration'])) : ?>
                 <div class="nav-wrapper">
                     <ul class="nav-list">
-                        <li class="list-item list-item--active">
-                            <a class="link link--nav">Новое</a>
+                        <li class="list-item <?= $currentUrl === '/tasks' ? 'list-item--active' : '' ?>">
+                            <a href="<?= Url::to('/tasks') ?>" class=" link link--nav">Новое</a>
                         </li>
-                        <li class="list-item">
+                        <li class="list-item <?= $currentUrl === '/mytasks' ? 'list-item--active' : '' ?>">
                             <a href="<?= Url::to('/mytasks') ?>" class="link link--nav">Мои задания</a>
                         </li>
                         <?php if ($user->role === 0) : ?>
-                            <li class="list-item">
+                            <li class="list-item <?= $currentUrl === '/tasks/add' ? 'list-item--active' : '' ?>">
                                 <a href="<?= Url::to('/tasks/add') ?>" class="link link--nav">Создать задание</a>
                             </li>
                         <?php endif; ?>
