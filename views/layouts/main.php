@@ -43,7 +43,7 @@ if ($user) {
                             <a class="link link--nav">Новое</a>
                         </li>
                         <li class="list-item">
-                            <a href="#" class="link link--nav">Мои задания</a>
+                            <a href="<?= Url::to('/mytasks') ?>" class="link link--nav">Мои задания</a>
                         </li>
                         <?php if ($user->role === 0) : ?>
                             <li class="list-item">
