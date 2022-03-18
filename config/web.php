@@ -83,6 +83,7 @@ $config = [
                 '/' => '/landing/index',
                 'geoapi/<geocode>' => 'api/geocoder',
                 'tasks/view/<id>' => 'tasks/view',
+                'mytasks/<tasks_status>' => 'mytasks/index',
                 'user/view/<id>' => 'user/view',
                 'accept/<id:\d+>' => 'tasks/accept',
                 'reject/<id:\d+>' => 'tasks/reject',

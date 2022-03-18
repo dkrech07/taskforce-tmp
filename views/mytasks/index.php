@@ -5,26 +5,28 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use TaskForce\utils\NounPluralConverter;
+
+$currentMyTasksUrl = Yii::$app->request->url;
 ?>
 
 <div class="left-menu">
     <h3 class="head-main head-task">Мои задания</h3>
     <ul class="side-menu-list">
-        <li class="side-menu-item side-menu-item--active">
-            <a class="link link--nav">Новые</a>
+        <li class="side-menu-item <?= $currentMyTasksUrl === '/mytasks/new' || $currentMyTasksUrl === '/mytasks/' ? 'side-menu-item--active' : '' ?>">
+            <a href="<?= Url::to(['mytasks/new']); ?>" class="link link--nav">Новые</a>
         </li>
-        <li class="side-menu-item">
-            <a href="#" class="link link--nav">В процессе</a>
+        <li class="side-menu-item <?= $currentMyTasksUrl === '/mytasks/in_progress' ? 'side-menu-item--active' : '' ?>">
+            <a href="<?= Url::to(['mytasks/in_progress']); ?>" class="link link--nav">В процессе</a>
         </li>
-        <li class="side-menu-item">
-            <a href="#" class="link link--nav">Закрытые</a>
+        <li class="side-menu-item <?= $currentMyTasksUrl === '/mytasks/finished' ? 'side-menu-item--active' : '' ?>">
+            <a href="<?= Url::to(['mytasks/finished']); ?>" class="link link--nav">Закрытые</a>
         </li>
     </ul>
 </div>
 <div class="left-column left-column--task">
     <h3 class="head-main head-regular">Новые задания</h3>
 
-    <?php foreach ($tasks as $task) : ?>
+    <?php foreach ($myTasks as $task) : ?>
         <div class="task-card">
             <div class="header-task">
                 <a href="<?= Url::to(['tasks/view', 'id' => $task->id]); ?>" class="link link--block link--big"><?= Html::encode($task->name); ?></a>

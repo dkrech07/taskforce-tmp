@@ -4,6 +4,7 @@ use yii\bootstrap4\Html;
 use app\assets\AppAsset;
 use yii\helpers\Url;
 use TaskForce\utils\CustomHelpers;
+use yii\widgets\Menu;
 
 AppAsset::register($this);
 
@@ -39,24 +40,31 @@ $currentUrl = Yii::$app->request->url;
             <a href='<?= Url::to('/') ?>' class="header-logo">
                 <img class="logo-image" src="/img/logotype.png" width=227 height=60 alt="taskforce">
             </a>
+
             <?php if (Url::current() !== Url::to(['site/registration'])) : ?>
                 <div class="nav-wrapper">
-                    <ul class="nav-list">
-                        <li class="list-item <?= $currentUrl === '/tasks' ? 'list-item--active' : '' ?>">
-                            <a href="<?= Url::to('/tasks') ?>" class=" link link--nav">Новое</a>
-                        </li>
-                        <li class="list-item <?= $currentUrl === '/mytasks' ? 'list-item--active' : '' ?>">
-                            <a href="<?= Url::to('/mytasks') ?>" class="link link--nav">Мои задания</a>
-                        </li>
-                        <?php if ($user->role === 0) : ?>
-                            <li class="list-item <?= $currentUrl === '/tasks/add' ? 'list-item--active' : '' ?>">
-                                <a href="<?= Url::to('/tasks/add') ?>" class="link link--nav">Создать задание</a>
-                            </li>
-                        <?php endif; ?>
-                        <li class="list-item">
-                            <a href="#" class="link link--nav">Настройки</a>
-                        </li>
-                    </ul>
+                    <?php
+                    $items = [
+                        ['label' => 'Новое', 'url' => ['/tasks/index']],
+                        ['label' => 'Мои задания', 'url' => ['/mytasks/index']],
+                        ['label' => 'Настройки', 'url' => ['/']]
+                    ];
+
+                    if ($user->role === 0) {
+                        $addItem = ['label' => 'Создать задание', 'url' => ['/tasks/add']];
+                        array_splice($items, 2, 0, array($addItem));
+                    }
+                    ?>
+
+                    <?= Menu::widget([
+                        'items' => $items,
+                        'activeCssClass' => 'list-item--active',
+                        'itemOptions' => ['class' => 'list-item'],
+                        'labelTemplate' => '<a class="link link--nav">{label}</a>',
+                        'linkTemplate' => '<a href="{url}" class="link link--nav">{label}</a>',
+                        'options' => ['class' => 'nav-list']
+                    ]);
+                    ?>
                 </div>
             <?php endif; ?>
         </nav>
