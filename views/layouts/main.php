@@ -46,7 +46,7 @@ $currentUrl = Yii::$app->request->url;
                     <?php
                     $items = [
                         ['label' => 'Новое', 'url' => ['/tasks/index']],
-                        ['label' => 'Мои задания', 'url' => ['/mytasks/index']],
+                        ['label' => 'Мои задания', 'url' => ['/mytasks/new']],
                         ['label' => 'Настройки', 'url' => ['/']]
                     ];
 

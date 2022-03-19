@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use TaskForce\utils\NounPluralConverter;
+use yii\widgets\Menu;
 
 $currentMyTasksUrl = Yii::$app->request->url;
 ?>
@@ -12,7 +13,26 @@ $currentMyTasksUrl = Yii::$app->request->url;
 <div class="left-menu">
     <h3 class="head-main head-task">Мои задания</h3>
     <ul class="side-menu-list">
-        <li class="side-menu-item <?= $currentMyTasksUrl === '/mytasks/new' || $currentMyTasksUrl === '/mytasks/' ? 'side-menu-item--active' : '' ?>">
+
+        <?php
+        $myItems = [
+            ['label' => 'Новые', 'url' => ['/mytasks/new', 'filter' => 'new']],
+            ['label' => 'В процессе', 'url' => ['/mytasks/in_progress', 'filter' => 'progress']],
+            ['label' => 'Закрытые', 'url' => ['/mytasks/finished', 'filter' => 'closed']]
+        ];
+
+        ?>
+
+        <?= Menu::widget([
+            'items' => $myItems,
+            'activeCssClass' => 'side-menu-item--active',
+            'itemOptions' => ['class' => 'side-menu-item'],
+            'labelTemplate' => '<a class="link link--nav">{label}</a>',
+            'linkTemplate' => '<a href="{url}" class="link link--nav">{label}</a>',
+            'options' => ['class' => 'side-menu-list']
+        ]); ?>
+
+        <!-- <li class="side-menu-item <?= $currentMyTasksUrl === '/mytasks/new' || $currentMyTasksUrl === '/mytasks/' ? 'side-menu-item--active' : '' ?>">
             <a href="<?= Url::to(['mytasks/new']); ?>" class="link link--nav">Новые</a>
         </li>
         <li class="side-menu-item <?= $currentMyTasksUrl === '/mytasks/in_progress' ? 'side-menu-item--active' : '' ?>">
@@ -20,7 +40,7 @@ $currentMyTasksUrl = Yii::$app->request->url;
         </li>
         <li class="side-menu-item <?= $currentMyTasksUrl === '/mytasks/finished' ? 'side-menu-item--active' : '' ?>">
             <a href="<?= Url::to(['mytasks/finished']); ?>" class="link link--nav">Закрытые</a>
-        </li>
+        </li> -->
     </ul>
 </div>
 <div class="left-column left-column--task">
