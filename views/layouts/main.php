@@ -47,7 +47,7 @@ $currentUrl = Yii::$app->request->url;
                     $items = [
                         ['label' => 'Новое', 'url' => ['/tasks/index']],
                         ['label' => 'Мои задания', 'url' => ['/mytasks/new']],
-                        ['label' => 'Настройки', 'url' => ['/']]
+                        ['label' => 'Настройки', 'url' => ['/user/edit']]
                     ];
 
                     if ($user->role === 0) {

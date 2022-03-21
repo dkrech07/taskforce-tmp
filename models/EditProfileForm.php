@@ -33,6 +33,10 @@ class ProfileForm extends Model
     //     );
     // }
 
+    public function getCurrentUser()
+    {
+    }
+
     public function rules()
     {
         return [

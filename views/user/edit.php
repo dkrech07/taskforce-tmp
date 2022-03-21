@@ -1,3 +1,8 @@
+<?php
+
+use yii\helpers\Url;
+?>
+
 <div class="main-content main-content--left container">
     <div class=" left-menu left-menu--edit">
         <h3 class="head-main head-task">Настройки</h3>
@@ -19,7 +24,7 @@
             <div class="photo-editing">
                 <div>
                     <p class="form-label">Аватар</p>
-                    <img class="avatar-preview" src="img/man-glasses.png" width="83" height="83">
+                    <img class="avatar-preview" src="<?= Url::to($userProfile->profile->avatar_link); ?>" width="83" height="83">
                 </div>
                 <input hidden value="Сменить аватар" type="file" id="button-input">
                 <label for="button-input" class="button button--black"> Сменить аватар</label>

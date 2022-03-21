@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use yii\web\NotFoundHttpException;
 use app\services\UserService;
+use TaskForce\utils\CustomHelpers;
+use Yii;
 
 class UserController extends SecuredController
 {
@@ -35,7 +37,12 @@ class UserController extends SecuredController
 
     public function actionEdit()
     {
+        $userId = Yii::$app->user->getId();
+        $userProfile = (new UserService())->getExecutor($userId);
+        print_r($userProfile->profile->avatar_link);
+
         return $this->render('edit', [
+            'userProfile' => $userProfile,
             // 'user' => $user,
             // 'specializations' => $specializations,
             // 'tasksFinishedCount' => $tasksFinishedCount,
