@@ -70,3 +70,6 @@ http://taskforce-tmp/geoapi/екатеринбург
 
 Страница Мои задачи
 http://taskforce-tmp/mytasks/index/new
+
+Страница редактирования профиля
+http://taskforce-tmp/user/edit

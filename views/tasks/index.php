@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use TaskForce\utils\NounPluralConverter;
+use yii\widgets\LinkPager;
 ?>
 
 <div class="left-column">

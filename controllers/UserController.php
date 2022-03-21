@@ -32,4 +32,17 @@ class UserController extends SecuredController
             'opinions' => $opinions,
         ]);
     }
+
+    public function actionEdit()
+    {
+        return $this->render('edit', [
+            // 'user' => $user,
+            // 'specializations' => $specializations,
+            // 'tasksFinishedCount' => $tasksFinishedCount,
+            // 'tasksFailedCount' => $tasksFailedCount,
+            // 'tasksInProgressCount' => $tasksInProgressCount,
+            // 'userRatingPosition' => $userRatingPosition,
+            // 'opinions' => $opinions,
+        ]);
+    }
 }
