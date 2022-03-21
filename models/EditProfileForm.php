@@ -9,7 +9,7 @@ use app\models\Users;
 use app\models\Profiles;
 
 
-class ProfileForm extends Model
+class EditProfileForm extends Model
 {
     public $avatar_link;
     public $name;

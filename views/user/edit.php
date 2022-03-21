@@ -1,5 +1,6 @@
 <?php
 
+use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 ?>
 
@@ -19,68 +20,73 @@ use yii\helpers\Url;
         </ul>
     </div>
     <div class="my-profile-form">
-        <form>
-            <h3 class="head-main head-regular">Мой профиль</h3>
-            <div class="photo-editing">
-                <div>
-                    <p class="form-label">Аватар</p>
-                    <img class="avatar-preview" src="<?= Url::to($userProfile->profile->avatar_link); ?>" width="83" height="83">
-                </div>
-                <input hidden value="Сменить аватар" type="file" id="button-input">
-                <label for="button-input" class="button button--black"> Сменить аватар</label>
+
+        <!-- <form> -->
+
+        <?php $form = ActiveForm::begin([
+            'id' => 'registration-form',
+            'options' => ['autocomplete' => 'off']
+        ]); ?>
+
+        <h3 class="head-main head-regular">Мой профиль</h3>
+        <div class="photo-editing">
+            <div>
+                <p class="form-label">Аватар</p>
+                <img class="avatar-preview" src="<?= Url::to($userProfile->profile->avatar_link); ?>" width="83" height="83">
+            </div>
+            <input hidden value="Сменить аватар" type="file" id="button-input">
+            <label for="button-input" class="button button--black"> Сменить аватар</label>
+        </div>
+
+        <div class="form-group">
+            <?= $form->field($EditProfileFormModel, 'name')->textInput(); ?>
+        </div>
+
+        <div class="half-wrapper">
+            <div class="form-group">
+                <?= $form->field($EditProfileFormModel, 'name')->textInput(); ?>
             </div>
             <div class="form-group">
-                <label class="control-label" for="profile-name">Ваше имя</label>
-                <input id="profile-name" type="text">
-                <span class="help-block">Error description is here</span>
+                <?= $form->field($EditProfileFormModel, 'bd', ['enableAjaxValidation' => true])->input('date', ['placeholder' => 'гггг-мм-дд']) ?>
             </div>
-            <div class="half-wrapper">
-                <div class="form-group">
-                    <label class="control-label" for="profile-email">Email</label>
-                    <input id="profile-email" type="email">
-                    <span class="help-block">Error description is here</span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="profile-date">День рождения</label>
-                    <input id="profile-date" type="date">
-                    <span class="help-block">Error description is here</span>
-                </div>
-            </div>
-            <div class="half-wrapper">
-                <div class="form-group">
-                    <label class="control-label" for="profile-phone">Номер телефона</label>
-                    <input id="profile-phone" type="tel">
-                    <span class="help-block">Error description is here</span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="profile-tg">Telegram</label>
-                    <input id="profile-tg" type="text">
-                    <span class="help-block">Error description is here</span>
-                </div>
+        </div>
+        <div class="half-wrapper">
+            <div class="form-group">
+                <?= $form->field($EditProfileFormModel, 'phone')->textInput(); ?>
             </div>
             <div class="form-group">
-                <label class="control-label" for="profile-info">Информация о себе</label>
-                <textarea id="profile-info"></textarea>
-                <span class="help-block">Error description is here</span>
+                <?= $form->field($EditProfileFormModel, 'messanger')->textInput(); ?>
+
             </div>
-            <div class="form-group">
-                <p class="form-label">Выбор специализаций</p>
-                <div class="checkbox-profile">
-                    <label class="control-label" for="сourier-services">
-                        <input type="checkbox" id="сourier-services" checked>
-                        Курьерские услуги</label>
-                    <label class="control-label" for="cargo-transportation">
-                        <input id="cargo-transportation" type="checkbox">
-                        Грузоперевозки</label>
-                    <label class="control-label" for="cleaning">
-                        <input id="cleaning" type="checkbox">
-                        Клининг</label>
-                    <label class="control-label" for="computer-help">
-                        <input id="computer-help" type="checkbox" checked>
-                        Компьютерная помощь</label>
-                </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="profile-info">Информация о себе</label>
+            <textarea id="profile-info"></textarea>
+            <span class="help-block">Error description is here</span>
+            <!-- <?= $form->field($EditProfileFormModel, 'description')->textarea() ?> -->
+
+        </div>
+        <div class="form-group">
+            <p class="form-label">Выбор специализаций</p>
+            <div class="checkbox-profile">
+                <label class="control-label" for="сourier-services">
+                    <input type="checkbox" id="сourier-services" checked>
+                    Курьерские услуги</label>
+                <label class="control-label" for="cargo-transportation">
+                    <input id="cargo-transportation" type="checkbox">
+                    Грузоперевозки</label>
+                <label class="control-label" for="cleaning">
+                    <input id="cleaning" type="checkbox">
+                    Клининг</label>
+                <label class="control-label" for="computer-help">
+                    <input id="computer-help" type="checkbox" checked>
+                    Компьютерная помощь</label>
             </div>
-            <input type="submit" class="button button--blue" value="Сохранить">
-        </form>
+        </div>
+        <input type="submit" class="button button--blue" value="Сохранить">
+
+        <!-- </form> -->
+        <?php ActiveForm::end(); ?>
+
     </div>
 </div>
