@@ -1,5 +1,7 @@
 <?php
 
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 ?>
@@ -63,13 +65,17 @@ use yii\helpers\Url;
             <label class="control-label" for="profile-info">Информация о себе</label>
             <textarea id="profile-info"></textarea>
             <span class="help-block">Error description is here</span>
-            <!-- <?= $form->field($EditProfileFormModel, 'description')->textarea() ?> -->
+            <!-- <?= $form->field($EditProfileFormModel, 'about')->textarea() ?> -->
 
         </div>
         <div class="form-group">
             <p class="form-label">Выбор специализаций</p>
             <div class="checkbox-profile">
-                <label class="control-label" for="сourier-services">
+
+                <?= $form->field($EditProfileFormModel, 'categories')->dropDownList(ArrayHelper::map($categories, 'id', 'name')); ?>
+
+
+                <!-- <label class="control-label" for="сourier-services">
                     <input type="checkbox" id="сourier-services" checked>
                     Курьерские услуги</label>
                 <label class="control-label" for="cargo-transportation">
@@ -80,10 +86,16 @@ use yii\helpers\Url;
                     Клининг</label>
                 <label class="control-label" for="computer-help">
                     <input id="computer-help" type="checkbox" checked>
-                    Компьютерная помощь</label>
+                    Компьютерная помощь</label> -->
             </div>
         </div>
-        <input type="submit" class="button button--blue" value="Сохранить">
+
+        <!-- <input type="submit" class="button button--blue" value="Сохранить"> -->
+
+        <?= Html::submitInput('Сохранитьт', [
+            'class' => 'button button--blue',
+            // 'style' => 'width: 660px;'
+        ]); ?>
 
         <!-- </form> -->
         <?php ActiveForm::end(); ?>

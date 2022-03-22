@@ -6,6 +6,7 @@ use yii\web\NotFoundHttpException;
 use app\services\UserService;
 use TaskForce\utils\CustomHelpers;
 use app\models\EditProfileForm;
+use app\models\Categories;
 use Yii;
 
 class UserController extends SecuredController
@@ -39,6 +40,7 @@ class UserController extends SecuredController
     public function actionEdit()
     {
         $EditProfileFormModel = new EditProfileForm();
+        $categories = new Categories();
 
         $userId = Yii::$app->user->getId();
         $userProfile = (new UserService())->getExecutor($userId);
@@ -47,6 +49,7 @@ class UserController extends SecuredController
         return $this->render('edit', [
             'userProfile' => $userProfile,
             'EditProfileFormModel' => $EditProfileFormModel,
+            'categories' => $categories,
             // 'user' => $user,
             // 'specializations' => $specializations,
             // 'tasksFinishedCount' => $tasksFinishedCount,
